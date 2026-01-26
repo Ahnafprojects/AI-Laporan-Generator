@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  
+  // Data Mahasiswa (Diisi saat Register)
+  name          String    // Nama Mahasiswa
+  nrp           String
+  kelas         String
+  
+  // Data Institusi (Untuk Cover Laporan)
+  prodi         String    @default("PROGRAM STUDI SARJANA TERAPAN TEKNIK INFORMATIKA")
+  departemen    String    @default("DEPARTEMEN TEKNIK INFORMATIKA DAN KOMPUTER")
+  institusi     String    @default("POLITEKNIK ELEKTRONIKA NEGERI SURABAYA")
+  
+  emailVerified DateTime? // Tanggal verifikasi email
+  verificationToken String? // Token verifikasi
+
+  // STATUS PRO
+  isPro        Boolean   @default(false)
+  proExpiresAt DateTime? // Kapan pro berakhir
+
+  reports       Report[]
+  dailyUsages   DailyUsage[]
+  feedbacks     Feedback[] // Add relation to Feedback
+  transactions  Transaction[]
+  createdAt     DateTime  @default(now())
+}
+
+model Report {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  
+  // Relasi ke User (Data mahasiswa ambil dari sini)
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  
+  // Input Form Laporan
+  title           String   // Judul Praktikum
+  subject         String   // Mata Kuliah
+  practiceDate    DateTime
+  lecturer        String   // Dosen Pengampu
+  
+  // Konten
+  labSheet        String   @db.Text // 1. Soal/Modul (Wajib)
+  codeContent     String?  @db.Text // 3. Kode (Opsional)
+  labImage        String?  @db.Text // 2. Foto Soal (Base64 String - Opsional)
+  
+  // Hasil AI
+  generatedReport String   @db.Text
+  aiModel         String
+  status          String   @default("draft")
+
+  @@index([userId])
+}
+
+model DailyUsage {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  date       DateTime // Format: YYYY-MM-DD (tanpa jam)
+  usageCount Int      @default(0) // Berapa kali generate di hari ini
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@unique([userId, date]) // Satu record per user per hari
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String?  // Opsional, user bisa anonim
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String   @db.Text
+  rating    Int      // 1-5 Bintang
+  email     String?  // Email opsional untuk balasan
+  createdAt DateTime @default(now())
+}
+
+// MODEL BARU: Riwayat Transaksi
+model Transaction {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  orderId   String   @unique // ID Unik dari Midtrans
+  amount    Int      // Harga (Rp 20.000)
+  status    String   @default("pending") // pending, success, failed
+  snapToken String?  // Token buat popup bayar
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
