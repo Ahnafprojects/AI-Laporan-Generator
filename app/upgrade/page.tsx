@@ -47,7 +47,7 @@ export default async function UpgradePage() {
   return (
     <div className="container py-20">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">Upgrade ke PRO 👑</h1>
+        <h1 className="text-4xl font-bold mb-4">Upgrade ke PRO</h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           Dapatkan akses unlimited untuk menggenerate laporan praktikum tanpa batas!
         </p>
