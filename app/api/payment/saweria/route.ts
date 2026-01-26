@@ -20,14 +20,25 @@ export async function POST(req: Request) {
     // 1. Validasi Keamanan Sederhana (Opsional tapi bagus)
     // Bisa pakai query param ?secret=kode_rahasia di URL webhook nanti
 
-    // 2. Cek Nominal
+    // 2. Cek Nominal dengan tolerance
     // Harga PRO: 20k (monthly), 5k (monthly+diskon), 180k (yearly), 45k (yearly+diskon)
-    const validAmounts = [5000, 20000, 45000, 180000];
+    const isValidAmount = (amount: number) => {
+      const validRanges = [
+        { min: 4900, max: 5100 },   // ~5k dengan tolerance
+        { min: 19500, max: 20500 }, // ~20k dengan tolerance  
+        { min: 44000, max: 46000 }, // ~45k dengan tolerance
+        { min: 175000, max: 185000 } // ~180k dengan tolerance
+      ];
+      
+      return validRanges.some(range => amount >= range.min && amount <= range.max);
+    };
     
-    if (!validAmounts.includes(data.amount_raw)) {
+    if (!isValidAmount(data.amount_raw)) {
       console.log(`Nominal ${data.amount_raw} tidak valid untuk PRO`);
       return NextResponse.json({ message: "Nominal tidak valid untuk upgrade PRO, terima kasih donasinya!" });
     }
+
+    console.log(`✅ Nominal ${data.amount_raw} valid untuk PRO upgrade`);
 
     // 3. Ambil Email User
     // Strategi: Cek donator_email dulu. Kalau login saweria beda sama login app,
