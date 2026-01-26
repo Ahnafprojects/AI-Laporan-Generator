@@ -58,8 +58,14 @@ export async function POST(req: Request) {
 
     const selectedPlan = planDetails[plan as keyof typeof planDetails] || planDetails.monthly;
 
-    // Generate unique order ID
-    const orderId = `PRO-${plan.toUpperCase()}-${user.id}-${Date.now()}`;
+    // Generate unique order ID (max 50 chars untuk Midtrans)
+    // Format: PRO-M/Y-shortened_user_id-timestamp_suffix
+    const shortUserId = user.id.slice(-8); // Ambil 8 karakter terakhir dari user ID
+    const timestampSuffix = Date.now().toString().slice(-8); // Ambil 8 digit terakhir timestamp
+    const planPrefix = plan === 'monthly' ? 'M' : 'Y';
+    const orderId = `PRO-${planPrefix}-${shortUserId}-${timestampSuffix}`;
+
+    console.log("Generated orderId:", orderId, "Length:", orderId.length);
 
     // Payload untuk Midtrans
     const parameter = {
