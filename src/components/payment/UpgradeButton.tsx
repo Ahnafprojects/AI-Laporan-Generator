@@ -9,7 +9,7 @@ export default function UpgradeButton() {
   const { data: session } = useSession();
   
   // Ganti dengan Link Saweria kamu
-  const SAWERIA_URL = "https://saweria.co/USERNAME_KAMU"; 
+  const SAWERIA_URL = "https://saweria.co/smartlabseepis"; 
 
   return (
     <div className="flex flex-col gap-2">
