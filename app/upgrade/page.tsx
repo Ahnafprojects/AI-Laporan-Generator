@@ -21,8 +21,9 @@ export default function UpgradePage() {
   // Harga dan diskon
   const ORIGINAL_MONTHLY = 20000;
   const ORIGINAL_YEARLY = 180000;
-  const DISCOUNTED_MONTHLY = 5000;
-  const DISCOUNTED_YEARLY = 5000; // Untuk testing, yearly juga jadi 5k
+  const DISCOUNTED_MONTHLY = 5000; // 75% discount
+  const DISCOUNT_PERCENTAGE = 0.75; // 75%
+  const DISCOUNTED_YEARLY = ORIGINAL_YEARLY * (1 - DISCOUNT_PERCENTAGE); // 180k -> 45k
   const VALID_REDEEM_CODE = "TEST15K";
   
   const monthlyPrice = isCodeApplied ? DISCOUNTED_MONTHLY : ORIGINAL_MONTHLY;
@@ -81,54 +82,56 @@ export default function UpgradePage() {
         </p>
       </div>
 
-      {/* Redeem Code Section */}
-      <div className="max-w-md mx-auto mb-8 bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <div className="flex items-center gap-2 mb-3">
-          <Gift className="h-5 w-5 text-blue-500" />
-          <span className="font-medium text-blue-700">Punya Kode Diskon?</span>
-        </div>
-        
-        {!isCodeApplied ? (
-          <div className="flex gap-2">
-            <Input
-              placeholder="Masukkan kode diskon"
-              value={redeemCode}
-              onChange={(e) => setRedeemCode(e.target.value)}
-              className="text-sm"
-            />
-            <Button 
-              onClick={handleApplyCode}
-              variant="outline" 
-              size="sm"
-              disabled={!redeemCode.trim()}
-            >
-              Apply
-            </Button>
+      {/* Redeem Code Section - Hidden in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="max-w-md mx-auto mb-8 bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <div className="flex items-center gap-2 mb-3">
+            <Gift className="h-5 w-5 text-blue-500" />
+            <span className="font-medium text-blue-700">Punya Kode Diskon?</span>
           </div>
-        ) : (
-          <div className="flex items-center justify-between bg-green-100 p-3 rounded border border-green-200">
-            <div className="text-sm text-green-700">
-              <span className="font-medium">✅ Kode "TEST15K" diterapkan!</span>
-              <br />
-              <span>Semua paket jadi cuma Rp 5.000!</span>
+          
+          {!isCodeApplied ? (
+            <div className="flex gap-2">
+              <Input
+                placeholder="Masukkan kode diskon"
+                value={redeemCode}
+                onChange={(e) => setRedeemCode(e.target.value)}
+                className="text-sm"
+              />
+              <Button 
+                onClick={handleApplyCode}
+                variant="outline" 
+                size="sm"
+                disabled={!redeemCode.trim()}
+              >
+                Apply
+              </Button>
             </div>
-            <Button 
-              onClick={handleRemoveCode}
-              variant="ghost" 
-              size="sm"
-              className="text-red-500 hover:text-red-700"
-            >
-              Hapus
-            </Button>
-          </div>
-        )}
-        
-        {!isCodeApplied && (
-          <div className="text-xs text-blue-600 mt-2">
-            💡 <strong>Testing:</strong> Gunakan kode "TEST15K" untuk diskon besar-besaran!
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="flex items-center justify-between bg-green-100 p-3 rounded border border-green-200">
+              <div className="text-sm text-green-700">
+                <span className="font-medium">✅ Kode "TEST15K" diterapkan!</span>
+                <br />
+                <span>Monthly: Rp 20k→5k, Yearly: Rp 180k→45k</span>
+              </div>
+              <Button 
+                onClick={handleRemoveCode}
+                variant="ghost" 
+                size="sm"
+                className="text-red-500 hover:text-red-700"
+              >
+                Hapus
+              </Button>
+            </div>
+          )}
+          
+          {!isCodeApplied && (
+            <div className="text-xs text-blue-600 mt-2">
+              💡 <strong>Testing:</strong> Gunakan kode "TEST15K" untuk diskon 75%!
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {/* FREE PLAN */}
@@ -236,7 +239,7 @@ export default function UpgradePage() {
                 {isCodeApplied ? "sekali bayar" : "per tahun"}
               </div>
               {isCodeApplied ? (
-                <div className="text-sm text-green-600 font-medium">Hemat Rp 175.000!</div>
+                <div className="text-sm text-green-600 font-medium">Hemat Rp 135.000! (75% off)</div>
               ) : (
                 <div className="text-sm text-green-600 font-medium">Hemat Rp 60.000!</div>
               )}

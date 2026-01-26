@@ -21,8 +21,8 @@ export async function POST(req: Request) {
     // Bisa pakai query param ?secret=kode_rahasia di URL webhook nanti
 
     // 2. Cek Nominal
-    // Harga PRO normal Rp 20.000, tapi ada diskon jadi Rp 5.000
-    const validAmounts = [5000, 20000]; // 5k dengan redeem code, 20k normal
+    // Harga PRO: 20k (monthly), 5k (monthly+diskon), 180k (yearly), 45k (yearly+diskon)
+    const validAmounts = [5000, 20000, 45000, 180000];
     
     if (!validAmounts.includes(data.amount_raw)) {
       console.log(`Nominal ${data.amount_raw} tidak valid untuk PRO`);
