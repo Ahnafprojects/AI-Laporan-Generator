@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 
 export async function sendWelcomeEmail(email: string, name: string, verificationToken: string) {
   try {
-    const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify?token=${verificationToken}`;
+    const verificationUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify?token=${verificationToken}`;
     
     await transporter.sendMail({
       from: process.env.MAIL_FROM,
@@ -54,7 +54,7 @@ export async function sendWelcomeEmail(email: string, name: string, verification
 
 export async function sendPasswordResetEmail(email: string, name: string, resetToken: string) {
   try {
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
     
     await transporter.sendMail({
       from: process.env.MAIL_FROM,
