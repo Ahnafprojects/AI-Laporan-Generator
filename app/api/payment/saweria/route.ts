@@ -21,9 +21,12 @@ export async function POST(req: Request) {
     // Bisa pakai query param ?secret=kode_rahasia di URL webhook nanti
 
     // 2. Cek Nominal
-    // Misalnya harga PRO Rp 20.000. Kalau kurang, anggap sedekah biasa.
-    if (data.amount_raw < 20000) {
-      return NextResponse.json({ message: "Nominal kurang untuk PRO, terima kasih donasinya!" });
+    // Harga PRO normal Rp 20.000, tapi ada diskon jadi Rp 5.000
+    const validAmounts = [5000, 20000]; // 5k dengan redeem code, 20k normal
+    
+    if (!validAmounts.includes(data.amount_raw)) {
+      console.log(`Nominal ${data.amount_raw} tidak valid untuk PRO`);
+      return NextResponse.json({ message: "Nominal tidak valid untuk upgrade PRO, terima kasih donasinya!" });
     }
 
     // 3. Ambil Email User
