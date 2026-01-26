@@ -125,7 +125,7 @@ export default async function UpgradePage() {
             </div>
             
             <div className="pt-4">
-              <UpgradeButton plan="monthly" />
+              <UpgradeButton />
             </div>
           </CardContent>
         </Card>
@@ -177,7 +177,7 @@ export default async function UpgradePage() {
             </div>
             
             <div className="pt-4">
-              <UpgradeButton plan="yearly" />
+              <UpgradeButton />
             </div>
           </CardContent>
         </Card>
