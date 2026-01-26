@@ -22,9 +22,9 @@ export async function POST(req: Request) {
 
     // 2. Cek Nominal dengan fee Saweria berbagai metode pembayaran
     // Base prices: 5k, 20k, 45k, 180k
-    // Fees: QRIS(0.7%), GoPay(2%), OVO(2.74%), LinkAja(1.69%)
+    // Fees: QRIS(0.7%), GoPay(2%), OVO(2.74%), LinkAja(1.69%), Admin Fee(5%)
     const calculateWithFees = (baseAmount: number) => {
-      const fees = [0.007, 0.02, 0.0274, 0.0169]; // 0.7%, 2%, 2.74%, 1.69%
+      const fees = [0.007, 0.02, 0.0274, 0.0169, 0.05]; // 0.7%, 2%, 2.74%, 1.69%, 5%
       return fees.map(fee => Math.round(baseAmount * (1 + fee)));
     };
     
