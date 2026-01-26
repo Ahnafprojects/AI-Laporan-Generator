@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     };
     
     const basePrices = [5000, 20000, 45000, 180000];
-    const validAmounts = [];
+    const validAmounts: number[] = [];
     
     basePrices.forEach(basePrice => {
       validAmounts.push(basePrice); // Original price
