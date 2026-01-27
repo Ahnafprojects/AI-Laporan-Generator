@@ -14,7 +14,7 @@ export default async function Home() {
       <section className="relative py-20 lg:py-32 overflow-hidden bg-slate-50 dark:bg-slate-950">
         <div className="container px-4 md:px-6 relative z-10 text-center">
           <div className="inline-block px-3 py-1 mb-4 text-sm font-semibold tracking-wider text-blue-600 uppercase bg-blue-100 rounded-full">
-            Edisi Mahasiswa PENS
+            Untuk Mahasiswa
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50 sm:text-6xl mb-6">
             Bikin Laporan Praktikum <br className="hidden sm:inline" />
@@ -24,7 +24,7 @@ export default async function Home() {
           </h1>
           <p className="max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-400 mb-8">
             Gak perlu lagi begadang mikirin kata-kata "Analisa" dan "Kesimpulan". 
-            Paste soal, paste kodingan, biarkan AI yang menyusun Laporan Resmi standar PENS buat kamu.
+            Paste soal, paste kodingan, biarkan AI yang menyusun Laporan Praktikum berkualitas buat kamu.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -51,7 +51,7 @@ export default async function Home() {
           </div>
           
           <p className="mt-4 text-sm text-slate-500">
-            *Format otomatis sesuai standar Laporan Resmi PENS.
+            *Format otomatis sesuai standar Laporan Praktikum.
           </p>
         </div>
 
@@ -73,10 +73,10 @@ export default async function Home() {
             <Card className="border-0 shadow-lg bg-slate-50/50">
               <CardHeader>
                 <FileText className="h-10 w-10 text-blue-600 mb-2" />
-                <CardTitle>Format PENS Valid</CardTitle>
+                <CardTitle>Format Profesional</CardTitle>
               </CardHeader>
               <CardContent className="text-slate-600">
-                Otomatis layout, Cover page sesuai standar (Logo, Prodi, Departemen), dan struktur Bab A-F yang rapi.
+                Otomatis layout, Cover page profesional, dan struktur laporan yang rapi dan terorganisir.
               </CardContent>
             </Card>
 

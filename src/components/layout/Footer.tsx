@@ -13,15 +13,15 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Crown className="h-6 w-6 text-yellow-500" />
-              <h3 className="font-bold text-lg">Smart Lab SEEPIS</h3>
+              <h3 className="font-bold text-lg">SmartLabs</h3>
             </div>
             <p className="text-sm text-muted-foreground">
-              AI-powered report generator untuk mahasiswa PENS. 
+              AI-powered report generator untuk mahasiswa. 
               Buat laporan praktikum berkualitas dengan teknologi terdepan.
             </p>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <Mail className="h-4 w-4" />
-              <span>support@smartlabseepis.com</span>
+              <span>smartlabseepis@gmail.com</span>
             </div>
           </div>
 
@@ -54,26 +54,6 @@ export default function Footer() {
               <li>
                 <FeedbackDialog />
               </li>
-              <li>
-                <a 
-                  href="https://github.com/Ahnafprojects/AI-Laporan-Generator/issues" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Report Bug
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://github.com/Ahnafprojects/AI-Laporan-Generator" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-foreground transition-colors"
-                >
-                  GitHub Repository
-                </a>
-              </li>
             </ul>
           </div>
 
@@ -101,7 +81,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 mt-8 border-t border-border">
           <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
             <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} Smart Lab SEEPIS. All rights reserved.
+              &copy; {new Date().getFullYear()} SmartLabs. All rights reserved.
             </p>
           
           </div>
@@ -111,7 +91,7 @@ export default function Footer() {
             <span>•</span>
             <span>AI-Powered</span>
             <span>•</span>
-            <span>For PENS Students</span>
+            
           </div>
         </div>
       </div>

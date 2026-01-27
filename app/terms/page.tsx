@@ -3,12 +3,12 @@ import Link from "next/link";
 import { FileText, ArrowLeft, Calendar, User, Shield, CreditCard, Ban, FileCheck } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Smart Lab SEEPIS",
-  description: "Terms of Service untuk AI-powered report generator Smart Lab SEEPIS. Ketentuan penggunaan platform, hak dan kewajiban pengguna, kebijakan pembayaran, dan aturan layanan.",
-  keywords: ["terms of service", "ketentuan layanan", "syarat penggunaan", "AI laporan generator", "Smart Lab SEEPIS", "PENS"],
+  title: "Terms of Service | SmartLabs",
+  description: "Terms of Service untuk AI-powered report generator SmartLabs. Ketentuan penggunaan platform, hak dan kewajiban pengguna, kebijakan pembayaran, dan aturan layanan.",
+  keywords: ["terms of service", "ketentuan layanan", "syarat penggunaan", "AI laporan generator", "SmartLabs"],
   openGraph: {
-    title: "Terms of Service - Smart Lab SEEPIS",
-    description: "Syarat dan ketentuan penggunaan platform AI-powered report generator untuk mahasiswa PENS",
+    title: "Terms of Service - SmartLabs",
+    description: "Syarat dan ketentuan penggunaan platform AI-powered report generator untuk mahasiswa",
     type: "website",
   },
 };
@@ -40,7 +40,7 @@ export default function TermsPage() {
           <h1 className="text-4xl font-bold">Terms of Service</h1>
         </div>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Syarat dan ketentuan penggunaan platform AI-powered report generator Smart Lab SEEPIS
+          Syarat dan ketentuan penggunaan platform AI-powered report generator SmartLabs
         </p>
       </div>
 
@@ -78,12 +78,12 @@ export default function TermsPage() {
           </h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Dengan mengakses dan menggunakan platform Smart Lab SEEPIS ("Layanan"), Anda menyetujui 
+              Dengan mengakses dan menggunakan platform SmartLabs ("Layanan"), Anda menyetujui 
               untuk terikat dengan Syarat dan Ketentuan ini ("Ketentuan"). Jika Anda tidak setuju dengan 
               ketentuan ini, Anda tidak diperkenankan menggunakan Layanan kami.
             </p>
             <p>
-              Ketentuan ini merupakan perjanjian yang mengikat secara hukum antara Anda dan Smart Lab SEEPIS 
+              Ketentuan ini merupakan perjanjian yang mengikat secara hukum antara Anda dan SmartLabs 
               terkait penggunaan platform AI-powered report generator kami.
             </p>
           </div>
@@ -94,14 +94,14 @@ export default function TermsPage() {
           <h2 className="text-2xl font-semibold">2. Deskripsi Layanan</h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Smart Lab SEEPIS adalah platform Software as a Service (SaaS) yang menyediakan layanan 
+              SmartLabs adalah platform Software as a Service (SaaS) yang menyediakan layanan 
               pembuatan laporan praktikum otomatis menggunakan teknologi Artificial Intelligence (AI) 
-              untuk mahasiswa Politeknik Elektronika Negeri Surabaya (PENS).
+              untuk mahasiswa.
             </p>
             <p>Layanan yang kami sediakan meliputi:</p>
             <ul>
               <li>Generator laporan praktikum berbasis AI</li>
-              <li>Template laporan yang disesuaikan dengan standar PENS</li>
+              <li>Template laporan yang profesional dan terstruktur</li>
               <li>Upload gambar dan dokumentasi praktikum</li>
               <li>Riwayat laporan yang telah dibuat</li>
               <li>Fitur premium dengan kuota tambahan dan prioritas</li>
@@ -119,7 +119,7 @@ export default function TermsPage() {
             <p>Untuk menggunakan Layanan ini, Anda harus:</p>
             <ul>
               <li>Berusia minimal 17 tahun atau memiliki izin orang tua/wali</li>
-              <li>Menjadi mahasiswa aktif Politeknik Elektronika Negeri Surabaya (PENS)</li>
+              <li>Menjadi mahasiswa aktif di perguruan tinggi</li>
               <li>Memiliki kapasitas hukum untuk membuat perjanjian yang mengikat</li>
               <li>Memberikan informasi yang akurat dan terkini saat registrasi</li>
               <li>Mematuhi semua hukum dan peraturan yang berlaku</li>
@@ -223,7 +223,7 @@ export default function TermsPage() {
           </h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Semua hak kekayaan intelektual terkait platform Smart Lab SEEPIS, termasuk 
+              Semua hak kekayaan intelektual terkait platform SmartLabs, termasuk 
               namun tidak terbatas pada kode sumber, desain, logo, dan merek dagang, 
               adalah milik kami atau pemberi lisensi kami.
             </p>
@@ -370,8 +370,7 @@ export default function TermsPage() {
               Jika Anda memiliki pertanyaan tentang Ketentuan ini, silakan hubungi kami melalui:
             </p>
             <ul>
-              <li><strong>Email:</strong> support@smartlabseepis.com</li>
-              <li><strong>GitHub:</strong> <a href="https://github.com/Ahnafprojects/AI-Laporan-Generator" target="_blank" rel="noopener noreferrer">AI-Laporan-Generator Repository</a></li>
+              <li><strong>Email:</strong> smartlabseepis@gmail.com</li>
               <li><strong>Feedback:</strong> Gunakan fitur feedback yang tersedia di platform</li>
             </ul>
           </div>
@@ -381,7 +380,7 @@ export default function TermsPage() {
       {/* Footer */}
       <div className="bg-muted/50 rounded-lg p-6 text-center">
         <p className="text-sm text-muted-foreground mb-4">
-          Dengan menggunakan Smart Lab SEEPIS, Anda menyetujui Ketentuan Layanan ini
+          Dengan menggunakan SmartLab, Anda menyetujui Ketentuan Layanan ini
         </p>
         <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-4 text-sm">
           <Link 

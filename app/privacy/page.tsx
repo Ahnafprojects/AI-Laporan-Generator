@@ -36,7 +36,7 @@ export default function PrivacyPage() {
               <div>
                 <h4 className="font-semibold mb-2">Data Akun:</h4>
                 <ul className="list-disc pl-6 space-y-1">
-                  <li>Nama lengkap dan NRP mahasiswa</li>
+                  <li>Nama lengkap dan NRP/NIM mahasiswa</li>
                   <li>Alamat email untuk login dan notifikasi</li>
                   <li>Kelas dan informasi akademik</li>
                   <li>Password (disimpan dalam bentuk hash/encrypted)</li>
@@ -78,7 +78,7 @@ export default function PrivacyPage() {
                 <li><strong>Komunikasi:</strong> Mengirim notifikasi sistem, update, dan support</li>
                 <li><strong>Pembayaran:</strong> Memproses upgrade ke PRO dan verifikasi pembayaran</li>
                 <li><strong>Keamanan:</strong> Deteksi aktivitas mencurigakan dan spam</li>
-                <li><strong>Analytics:</strong> Memahami pola penggunaan untuk pengembangan fitur</li>
+                <li><strong>Compliance:</strong> Memenuhi persyaratan hukum dan regulasi</li>
                 <li><strong>Compliance:</strong> Memenuhi persyaratan hukum dan regulasi</li>
               </ul>
             </CardContent>
@@ -92,7 +92,7 @@ export default function PrivacyPage() {
             <CardContent className="space-y-4">
               <div>
                 <h4 className="font-semibold mb-2">Lokasi Penyimpanan:</h4>
-                <p>Data disimpan di server cloud yang aman (Neon Database, Netlify) dengan enkripsi dan backup otomatis.</p>
+                <p>Data disimpan di server cloud yang aman dengan enkripsi dan backup otomatis.</p>
               </div>
               <div>
                 <h4 className="font-semibold mb-2">Keamanan:</h4>
@@ -120,30 +120,30 @@ export default function PrivacyPage() {
               <ul className="list-disc pl-6 space-y-2">
                 <li><strong>AI Provider (Groq):</strong> Input laporan untuk processing AI (tidak menyimpan data pribadi)</li>
                 <li><strong>Payment Processor (Saweria):</strong> Data transaksi untuk verifikasi pembayaran PRO</li>
-                <li><strong>Cloud Infrastructure:</strong> Neon Database, Netlify untuk hosting dan database</li>
+                <li><strong>Cloud Infrastructure:</strong> Untuk hosting dan database yang aman</li>
                 <li><strong>Analytics:</strong> Data usage yang di-anonymize untuk improvement</li>
-                <li><strong>Legal Compliance:</strong> Jika diwajibkan oleh hukum atau regulasi</li>
               </ul>
             </CardContent>
           </Card>
 
-          {/* 5. Cookies & Tracking */}
+          {/* 5. Session & Data Storage */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Cookie className="h-5 w-5" />
-                5. Cookies & Tracking
+                5. Session & Data Storage
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p>Kami menggunakan cookies dan teknologi tracking untuk:</p>
+              <p>Kami menggunakan teknologi web standar untuk:</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>Essential Cookies:</strong> Session login, preferensi, keamanan (diperlukan untuk fungsi dasar)</li>
-                <li><strong>Analytics:</strong> Google Analytics atau similar untuk memahami penggunaan (dapat di-disable)</li>
-                <li><strong>Performance:</strong> Monitoring performa dan error tracking</li>
+                <li><strong>Session Management:</strong> Login, preferensi, dan keamanan akun</li>
+                <li><strong>Analytics:</strong> Memahami penggunaan untuk meningkatkan layanan</li>
+                <li><strong>Performance:</strong> Monitoring dan optimasi performa platform</li>
               </ul>
               <p className="text-sm text-muted-foreground">
-                Anda dapat mengatur cookies di browser, namun menonaktifkan essential cookies dapat mengganggu fungsi website.
+                Data session diperlukan untuk fungsi normal platform. Anda dapat mengatur 
+                preferensi browser sesuai kebutuhan.
               </p>
             </CardContent>
           </Card>
@@ -199,7 +199,7 @@ export default function PrivacyPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p>
-                Layanan ini ditujukan untuk mahasiswa PENS (umumnya 18+ tahun). Kami tidak secara sengaja mengumpulkan 
+                Layanan ini ditujukan untuk mahasiswa (umumnya 18+ tahun). Kami tidak secara sengaja mengumpulkan 
                 data dari anak-anak di bawah 13 tahun. Jika orang tua mengetahui bahwa anak mereka memberikan data 
                 pribadi, silakan hubungi kami untuk penghapusan segera.
               </p>
@@ -216,9 +216,8 @@ export default function PrivacyPage() {
                 Jika Anda memiliki pertanyaan mengenai kebijakan privasi ini atau ingin menggunakan hak-hak Anda:
               </p>
               <ul className="space-y-2">
-                <li><strong>Email:</strong> privacy@smartlabseepis.com</li>
+                <li><strong>Email:</strong> smartlabseepis@gmail.com</li>
                 <li><strong>Feedback:</strong> Gunakan tombol feedback di website</li>
-                <li><strong>Website:</strong> smartlabseepis.netlify.app</li>
               </ul>
               <p className="text-sm text-muted-foreground">
                 Kami berkomitmen untuk merespons pertanyaan privasi dalam waktu 7 hari kerja.
@@ -229,7 +228,7 @@ export default function PrivacyPage() {
 
         <div className="mt-12 text-center text-sm text-muted-foreground">
           <p>
-            Dengan menggunakan layanan Smart Lab SEEPIS, Anda menyetujui pengumpulan dan penggunaan 
+            Dengan menggunakan layanan SmartLabs, Anda menyetujui pengumpulan dan penggunaan 
             informasi sesuai dengan kebijakan privasi ini.
           </p>
         </div>
