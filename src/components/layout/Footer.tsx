@@ -103,17 +103,7 @@ export default function Footer() {
             <p className="text-sm text-muted-foreground">
               &copy; {new Date().getFullYear()} Smart Lab SEEPIS. All rights reserved.
             </p>
-           /* <p className="text-xs text-muted-foreground">
-              Made with by{" "}
-              <a
-                href="https://github.com/muhammadahnaf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium underline underline-offset-4 hover:text-foreground"
-              >
-                
-              </a>
-            </p> */
+          
           </div>
           
           <div className="flex items-center space-x-4 text-xs text-muted-foreground mt-4 md:mt-0">
