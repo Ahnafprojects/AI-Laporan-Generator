@@ -29,6 +29,7 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
   const [reports, setReports] = useState(initialReports);
   const [feedbacks, setFeedbacks] = useState(initialFeedbacks);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [upgradingId, setUpgradingId] = useState<string | null>(null);
   
   // States untuk search
   const [userSearchTerm, setUserSearchTerm] = useState("");
@@ -61,6 +62,47 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
       toast({ variant: "destructive", title: "Error", description: "Gagal menghapus user." });
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  // FUNGSI UPGRADE KE PRO
+  const handleUpgradeToPro = async (userId: string, userEmail: string) => {
+    setUpgradingId(userId);
+    try {
+      const res = await fetch("/api/payment/manual-activate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          email: userEmail, 
+          paymentId: `admin-upgrade-${Date.now()}` 
+        }),
+      });
+      
+      if (!res.ok) throw new Error("Gagal upgrade");
+      
+      const result = await res.json();
+      
+      // Update user di state langsung
+      setUsers(users.map(u => 
+        u.id === userId 
+          ? { ...u, isPro: true, proExpiresAt: result.expiresAt }
+          : u
+      ));
+      
+      toast({ 
+        title: "Upgrade Berhasil!", 
+        description: `User berhasil diupgrade ke PRO sampai ${new Date(result.expiresAt).toLocaleDateString('id-ID')}` 
+      });
+    } catch (err) {
+      toast({ 
+        variant: "destructive", 
+        title: "Error", 
+        description: "Gagal upgrade user ke PRO." 
+      });
+    } finally {
+      setUpgradingId(null);
     }
   };
 
@@ -297,28 +339,47 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
                           </TableCell>
                           <TableCell>{user._count.reports} Laporan</TableCell>
                           <TableCell className="text-right">
-                          {/* ALERT DIALOG BIAR GA SALAH HAPUS */}
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="destructive" size="sm" disabled={deletingId === user.id}>
-                                {deletingId === user.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserX className="h-4 w-4" />}
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Hapus User {user.name}?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Ini akan menghapus akun user DAN SEMUA LAPORAN yang pernah dia buat secara permanen. Tindakan tidak bisa dibatalkan.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Batal</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDeleteUser(user.id)} className="bg-red-600 hover:bg-red-700">
-                                  Ya, Musnahkan
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                            <div className="flex gap-2 justify-end">
+                              {/* TOMBOL UPGRADE KE PRO */}
+                              {!isActivePro && (
+                                <Button 
+                                  variant="default" 
+                                  size="sm" 
+                                  onClick={() => handleUpgradeToPro(user.id, user.email)}
+                                  disabled={upgradingId === user.id}
+                                  className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                                >
+                                  {upgradingId === user.id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <Crown className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              )}
+                              
+                              {/* ALERT DIALOG BIAR GA SALAH HAPUS */}
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="destructive" size="sm" disabled={deletingId === user.id}>
+                                    {deletingId === user.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserX className="h-4 w-4" />}
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Hapus User {user.name}?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Ini akan menghapus akun user DAN SEMUA LAPORAN yang pernah dia buat secara permanen. Tindakan tidak bisa dibatalkan.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Batal</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDeleteUser(user.id)} className="bg-red-600 hover:bg-red-700">
+                                      Ya, Musnahkan
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
                         </TableCell>
                       </TableRow>
                     );
