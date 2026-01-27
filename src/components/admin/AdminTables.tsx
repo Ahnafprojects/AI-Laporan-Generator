@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
-import { Trash2, Loader2, FileText, UserX, Search, ChevronLeft, ChevronRight, MessageSquare, Star, Crown, Filter } from "lucide-react";
+import { Trash2, Loader2, FileText, UserX, Search, ChevronLeft, ChevronRight, MessageSquare, Star, Crown, Filter, Database, Activity, Users, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -30,6 +30,8 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
   const [feedbacks, setFeedbacks] = useState(initialFeedbacks);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [upgradingId, setUpgradingId] = useState<string | null>(null);
+  const [dbStats, setDbStats] = useState<any>(null);
+  const [loadingStats, setLoadingStats] = useState(false);
   
   // States untuk search
   const [userSearchTerm, setUserSearchTerm] = useState("");
@@ -44,6 +46,27 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
   const [reportCurrentPage, setReportCurrentPage] = useState(1);
   const [feedbackCurrentPage, setFeedbackCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // FETCH DATABASE USAGE STATS
+  const fetchDbStats = async () => {
+    setLoadingStats(true);
+    try {
+      const res = await fetch("/api/admin/database-stats");
+      if (res.ok) {
+        const stats = await res.json();
+        setDbStats(stats);
+      }
+    } catch (error) {
+      console.error("Error fetching DB stats:", error);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
+  // Load stats on mount
+  useEffect(() => {
+    fetchDbStats();
+  }, []);
 
   // FUNGSI HAPUS USER
   const handleDeleteUser = async (userId: string) => {
@@ -65,41 +88,63 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
     }
   };
 
-  // FUNGSI UPGRADE KE PRO
-  const handleUpgradeToPro = async (userId: string, userEmail: string) => {
+  // FUNGSI UPDATE STATUS USER (FREE/PRO MONTHLY/PRO YEARLY)
+  const handleUpdateUserStatus = async (userId: string, userEmail: string, newStatus: 'free' | 'monthly' | 'yearly') => {
     setUpgradingId(userId);
     try {
-      const res = await fetch("/api/payment/manual-activate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
+      let endpoint = "";
+      let body = {};
+      
+      if (newStatus === 'free') {
+        // Downgrade ke FREE
+        endpoint = "/api/admin/downgrade-user";
+        body = { userId, email: userEmail };
+      } else {
+        // Upgrade ke PRO
+        endpoint = "/api/payment/manual-activate";
+        body = { 
           email: userEmail, 
-          paymentId: `admin-upgrade-${Date.now()}` 
-        }),
+          paymentId: `admin-${newStatus}-${Date.now()}`,
+          plan: newStatus
+        };
+      }
+      
+      const res = await fetch(endpoint, {
+        method: "POST", 
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
       
-      if (!res.ok) throw new Error("Gagal upgrade");
+      if (!res.ok) throw new Error("Gagal update status");
       
       const result = await res.json();
       
-      // Update user di state langsung
+      // Update user di state
       setUsers(users.map(u => 
         u.id === userId 
-          ? { ...u, isPro: true, proExpiresAt: result.expiresAt }
+          ? { 
+              ...u, 
+              isPro: newStatus !== 'free', 
+              proExpiresAt: newStatus === 'free' ? null : result.expiresAt 
+            }
           : u
       ));
       
+      const statusText = {
+        'free': 'FREE',
+        'monthly': 'PRO Monthly (30 hari)',
+        'yearly': 'PRO Yearly (365 hari)'
+      };
+      
       toast({ 
-        title: "Upgrade Berhasil!", 
-        description: `User berhasil diupgrade ke PRO sampai ${new Date(result.expiresAt).toLocaleDateString('id-ID')}` 
+        title: "Status Diupdate!", 
+        description: `User berhasil diubah ke ${statusText[newStatus]}` 
       });
     } catch (err) {
       toast({ 
         variant: "destructive", 
         title: "Error", 
-        description: "Gagal upgrade user ke PRO." 
+        description: "Gagal mengubah status user." 
       });
     } finally {
       setUpgradingId(null);
@@ -248,6 +293,7 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
         <TabsTrigger value="users">Daftar User ({filteredUsers.length})</TabsTrigger>
         <TabsTrigger value="reports">Daftar Laporan ({filteredReports.length})</TabsTrigger>
         <TabsTrigger value="feedbacks">Masukan ({filteredFeedbacks.length})</TabsTrigger>
+        <TabsTrigger value="database">Database Usage</TabsTrigger>
       </TabsList>
 
       {/* TAB MANAGE USER */}
@@ -295,7 +341,8 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
                     <TableHead>Email</TableHead>
                     <TableHead>Kelas</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Total Laporan</TableHead>
+                    <TableHead>Usage AI</TableHead>
+                    <TableHead>Terdaftar</TableHead>
                     <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -337,24 +384,68 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
                               )}
                             </div>
                           </TableCell>
-                          <TableCell>{user._count.reports} Laporan</TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              <div>{user._count.reports} Laporan</div>
+                              <div className="text-xs text-muted-foreground">
+                                Daily: {user.dailyUsage || 0}/50
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm">
+                              <div>{format(new Date(user.createdAt), "dd/MM/yy", { locale: idLocale })}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {format(new Date(user.createdAt), "HH:mm", { locale: idLocale })}
+                              </div>
+                            </div>
+                          </TableCell>
                           <TableCell className="text-right">
-                            <div className="flex gap-2 justify-end">
-                              {/* TOMBOL UPGRADE KE PRO */}
-                              {!isActivePro && (
+                            <div className="flex gap-1 justify-end">
+                              {/* STATUS MANAGEMENT BUTTONS */}
+                              {isActivePro ? (
                                 <Button 
-                                  variant="default" 
+                                  variant="outline" 
                                   size="sm" 
-                                  onClick={() => handleUpgradeToPro(user.id, user.email)}
+                                  onClick={() => handleUpdateUserStatus(user.id, user.email, 'free')}
                                   disabled={upgradingId === user.id}
-                                  className="bg-yellow-500 hover:bg-yellow-600 text-black"
+                                  className="text-xs px-2 h-7"
                                 >
                                   {upgradingId === user.id ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <Loader2 className="h-3 w-3 animate-spin" />
                                   ) : (
-                                    <Crown className="h-4 w-4" />
+                                    "→ FREE"
                                   )}
                                 </Button>
+                              ) : (
+                                <>
+                                  <Button 
+                                    variant="default" 
+                                    size="sm" 
+                                    onClick={() => handleUpdateUserStatus(user.id, user.email, 'monthly')}
+                                    disabled={upgradingId === user.id}
+                                    className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 h-7"
+                                  >
+                                    {upgradingId === user.id ? (
+                                      <Loader2 className="h-3 w-3 animate-spin" />
+                                    ) : (
+                                      "PRO 30d"
+                                    )}
+                                  </Button>
+                                  <Button 
+                                    variant="default" 
+                                    size="sm" 
+                                    onClick={() => handleUpdateUserStatus(user.id, user.email, 'yearly')}
+                                    disabled={upgradingId === user.id}
+                                    className="bg-yellow-500 hover:bg-yellow-600 text-black text-xs px-2 h-7"
+                                  >
+                                    {upgradingId === user.id ? (
+                                      <Loader2 className="h-3 w-3 animate-spin" />
+                                    ) : (
+                                      "PRO 1y"
+                                    )}
+                                  </Button>
+                                </>
                               )}
                               
                               {/* ALERT DIALOG BIAR GA SALAH HAPUS */}
@@ -386,7 +477,7 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
                     })
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                         {userSearchTerm ? "Tidak ada pengguna yang cocok dengan pencarian." : "Tidak ada pengguna."}
                       </TableCell>
                     </TableRow>
@@ -701,6 +792,155 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
             </div>
           </CardContent>
         </Card>
+      </TabsContent>
+
+      {/* TAB DATABASE USAGE */}
+      <TabsContent value="database">
+        <div className="grid gap-6">
+          {/* Header dengan Refresh Button */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="h-5 w-5" />
+                  Database Usage & Statistics
+                </CardTitle>
+                <Button onClick={fetchDbStats} disabled={loadingStats} variant="outline" size="sm">
+                  {loadingStats ? <Loader2 className="h-4 w-4 animate-spin" /> : <BarChart3 className="h-4 w-4" />}
+                  Refresh Stats
+                </Button>
+              </div>
+            </CardHeader>
+          </Card>
+
+          {/* Stats Cards */}
+          {dbStats && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Table Counts */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500">Database Tables</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Users:</span>
+                      <span className="font-medium">{dbStats.tables?.users || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Reports:</span>
+                      <span className="font-medium">{dbStats.tables?.reports || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Transactions:</span>
+                      <span className="font-medium">{dbStats.tables?.transactions || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Feedbacks:</span>
+                      <span className="font-medium">{dbStats.tables?.feedbacks || 0}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Activity Stats */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500 flex items-center gap-2">
+                    <Activity className="h-4 w-4" />
+                    Today's Activity
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm">New Users:</span>
+                      <span className="font-medium text-green-600">{dbStats.activity?.todayUsers || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Reports Gen:</span>
+                      <span className="font-medium text-blue-600">{dbStats.activity?.todayReports || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">PRO Users:</span>
+                      <span className="font-medium text-yellow-600">{dbStats.activity?.proUsers || 0}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Database Usage */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500">Database Queries</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Est. Queries:</span>
+                      <span className="font-medium">{dbStats.usage?.estimatedQueries?.toLocaleString() || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Avg/User:</span>
+                      <span className="font-medium">{dbStats.usage?.avgQueriesPerUser || 0}</span>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-2">
+                      * Estimated based on app usage patterns
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Cloud Provider Info */}
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500">Cloud Info</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Provider:</span>
+                      <span className="font-medium">Neon/Postgres</span>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Monitor usage in provider dashboard for accurate limits & billing.
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Top AI Users */}
+          {dbStats?.usage?.topUsers && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Top AI Users (Most Reports Generated)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {dbStats.usage.topUsers.map((user: any, index: number) => (
+                    <div key={user.email} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                          {index + 1}
+                        </div>
+                        <span className="font-medium">{user.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-blue-600">{user._count.reports}</span>
+                        <span className="text-sm text-gray-500">reports</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </TabsContent>
     </Tabs>
   );
