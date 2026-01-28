@@ -71,7 +71,16 @@ function LoginForm() {
           title: "Login berhasil!",
           description: "Selamat datang kembali.",
         });
-        router.push("/create");
+
+        // Smart Redirect: Use callbackUrl if present, otherwise default to /create
+        const callbackUrl = searchParams.get("callbackUrl");
+        if (callbackUrl) {
+          // Force HTTPS to avoid redirect loops if the env var generated an http link
+          const secureUrl = callbackUrl.replace("http://", "https://");
+          router.push(secureUrl);
+        } else {
+          router.push("/create");
+        }
       }
     } catch (error) {
       toast({
