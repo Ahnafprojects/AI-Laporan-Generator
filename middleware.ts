@@ -12,6 +12,8 @@ export const config = {
     "/create",
     "/preview/:path*", // Semua halaman preview butuh login
     "/dashboard/:path*",
-    "/tools/:path*" // Semua tools butuh login
+    "/tools/:path*", // Semua tools butuh login
+    "/profile/:path*", // Profile juga butuh login
+    "/admin/:path*", // Admin butuh login
   ]
 };
