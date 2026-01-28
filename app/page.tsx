@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Zap, FileText, ShieldCheck, ArrowRight, Star } from "lucide-react";
+import { CheckCircle2, Zap, FileText, ShieldCheck, ArrowRight, Star, Mail, Wand2 } from "lucide-react";
 
 export default async function Home() {
   const session = await getServerSession();
@@ -150,6 +150,79 @@ export default async function Home() {
                 <div className="h-4 bg-slate-200 rounded w-full" />
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TOOLS SECTION */}
+      <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
+        <div className="container px-4 md:px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight mb-4">Tools Tambahan</h2>
+            <p className="text-slate-500 max-w-xl mx-auto">
+              Tidak hanya laporan praktikum, kami juga punya tools lain untuk membantu perjalanan akademik dan karier kamu.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+            {/* Cover Letter Tool */}
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group">
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto mb-4 w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Mail className="h-8 w-8 text-blue-600" />
+                </div>
+                <CardTitle className="text-xl text-blue-900">Surat Sakti</CardTitle>
+                <p className="text-sm text-slate-500">Cover Letter Generator</p>
+              </CardHeader>
+              <CardContent className="text-center space-y-4">
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Bikin HRD jatuh cinta pada pandangan pertama lewat kata-kata. 
+                  Generate cover letter yang profesional dan menarik untuk lamaran kerja.
+                </p>
+                <Link href="/tools/cover-letter">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white group-hover:shadow-lg transition-all">
+                    Buat Cover Letter
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* CV Maker Tool */}
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group">
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto mb-4 w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <Wand2 className="h-8 w-8 text-purple-600" />
+                </div>
+                <CardTitle className="text-xl text-purple-900">CV Magic</CardTitle>
+                <p className="text-sm text-slate-500">CV Bullet Point Generator</p>
+              </CardHeader>
+              <CardContent className="text-center space-y-4">
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Ubah pengalaman "biasa aja" jadi kalimat profesional yang lolos sistem ATS HRD. 
+                  Perfect untuk mahasiswa yang mau apply internship/kerja.
+                </p>
+                <Link href="/tools/cv-builder">
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white group-hover:shadow-lg transition-all">
+                    Sulap CV Kamu
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-12">
+            {/* <p className="text-sm text-slate-500 mb-4">
+              <strong>Coming Soon:</strong> Resume Builder, LinkedIn Optimizer, Interview Prep
+            </p> */}
+            {!session && (
+              <Link href="/register">
+                <Button variant="outline" size="lg">
+                  Daftar Gratis untuk Akses Semua Tools
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </section>

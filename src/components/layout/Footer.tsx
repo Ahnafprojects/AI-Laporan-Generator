@@ -87,11 +87,11 @@ export default function Footer() {
           </div>
           
           <div className="flex items-center space-x-4 text-xs text-muted-foreground mt-4 md:mt-0">
+             <span>•</span>
             <span>SaaS Platform</span>
             <span>•</span>
             <span>AI-Powered</span>
-            <span>•</span>
-            
+          
           </div>
         </div>
       </div>

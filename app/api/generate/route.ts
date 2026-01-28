@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth"; // PENTING
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Groq from "groq-sdk";
 import { SYSTEM_PROMPT } from "@/lib/ai/prompts";
@@ -9,7 +10,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 export async function POST(req: Request) {
   try {
     // 1. CEK AUTHENTICATION
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized. Please Login." }, { status: 401 });
     }

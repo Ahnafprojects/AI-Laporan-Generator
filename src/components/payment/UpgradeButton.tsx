@@ -109,7 +109,7 @@ export default function UpgradeButton() {
       
       {/* Instruksi Penting */}
       <div className="text-xs text-muted-foreground bg-slate-100 p-2 rounded border border-slate-200">
-        <p className="font-semibold text-red-500 mb-1">⚠️ PENTING:</p>
+        <p className="font-semibold text-red-500 mb-1">PENTING:</p>
         <ul className="list-disc pl-4 space-y-1">
           <li>Klik tombol di atas.</li>
           <li>Isi nominal <strong>{formatPrice(currentPrice)}</strong>.</li>

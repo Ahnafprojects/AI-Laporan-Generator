@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
     }
 
     // Cek session untuk mendapatkan userId (opsional)
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const userId = session?.user?.email ? 
       await prisma.user.findUnique({ where: { email: session.user.email }, select: { id: true } }).then(u => u?.id) 
       : null;

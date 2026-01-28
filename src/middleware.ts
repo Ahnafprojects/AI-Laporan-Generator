@@ -11,6 +11,7 @@ export const config = {
   matcher: [
     "/create",
     "/preview/:path*", // Semua halaman preview butuh login
-    "/dashboard/:path*"
+    "/dashboard/:path*",
+    "/tools/:path*" // Semua tools butuh login
   ]
 };

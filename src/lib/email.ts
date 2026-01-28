@@ -22,7 +22,7 @@ export async function sendWelcomeEmail(email: string, name: string, verification
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #2563eb;">Verifikasi Email Anda, ${name}!</h1>
           <p>Terima kasih telah mendaftar di AI Laporan Generator.</p>
-          <p><strong>⚠️ Penting:</strong> Untuk mengaktifkan akun Anda, silakan klik tombol verifikasi di bawah ini:</p>
+          <p><strong>Penting:</strong> Untuk mengaktifkan akun Anda, silakan klik tombol verifikasi di bawah ini:</p>
           
           <div style="margin: 30px 0; text-align: center;">
             <a href="${verificationUrl}" 
@@ -64,7 +64,7 @@ export async function sendPasswordResetEmail(email: string, name: string, resetT
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #dc2626;">Reset Password untuk ${name}</h1>
           <p>Kami menerima permintaan untuk reset password akun Anda.</p>
-          <p><strong>⚠️ Penting:</strong> Klik tombol di bawah ini untuk reset password:</p>
+          <p><strong>Penting:</strong> Klik tombol di bawah ini untuk reset password:</p>
           
           <div style="margin: 30px 0; text-align: center;">
             <a href="${resetUrl}" 

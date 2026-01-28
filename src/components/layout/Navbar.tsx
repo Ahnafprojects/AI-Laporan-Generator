@@ -48,7 +48,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary">
           <Sparkles className="h-6 w-6" />
-          <span>AI Laporan</span>
+          <span>SmartLabs</span>
         </Link>
 
         {/* Menu Kanan */}
