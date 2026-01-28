@@ -12,6 +12,7 @@ export default function CoverLetterPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
   const [showPreview, setShowPreview] = useState(false);
+  const [usageInfo, setUsageInfo] = useState({ currentUsage: 0, maxUsage: 3, isPro: false });
   const { toast } = useToast();
   
   // State form
@@ -43,10 +44,30 @@ export default function CoverLetterPage() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      setResult(data.content);
-      setShowPreview(true);
+      
+      if (data.content) {
+        setResult(data.content);
+        setShowPreview(true);
+        
+        if (data.usageInfo) {
+          setUsageInfo(data.usageInfo);
+          if (!data.usageInfo.isPro) {
+            toast({
+              title: "✅ Cover Letter Generated!",
+              description: `AI usage: ${data.usageInfo.currentUsage}/${data.usageInfo.maxUsage} today`,
+            });
+          }
+        }
+      } else {
+        if (data.error?.includes('Daily AI usage limit')) {
+          alert(`❌ ${data.error}\n\n💎 Upgrade ke Pro untuk unlimited AI access!`);
+        } else {
+          alert(`❌ Error: ${data.error || 'Failed to generate'}`);
+        }
+      }
     } catch (error) {
-      alert("Error generating cover letter");
+      console.error("Cover letter generation error:", error);
+      alert("❌ Error generating cover letter");
     } finally {
       setLoading(false);
     }
@@ -89,9 +110,22 @@ export default function CoverLetterPage() {
   return (
     <div className="max-w-6xl mx-auto py-10 px-4">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          Professional Cover Letter Generator
-        </h1>
+        <div className="flex justify-center items-center gap-4 mb-4">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Professional Cover Letter Generator
+          </h1>
+          
+          {/* AI Usage Indicator */}
+          <div className="text-xs bg-gray-100 px-3 py-2 rounded-full border">
+            {usageInfo.isPro ? (
+              <span className="text-purple-600 font-bold">🔥 PRO: Unlimited</span>
+            ) : (
+              <span className="text-gray-600">
+                🤖 AI Today: <b>{usageInfo.currentUsage}/{usageInfo.maxUsage}</b>
+              </span>
+            )}
+          </div>
+        </div>
         <p className="text-gray-600 text-lg">Buat surat lamaran yang mengesankan HRD dalam hitungan detik</p>
       </div>
       

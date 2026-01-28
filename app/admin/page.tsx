@@ -53,6 +53,43 @@ export default async function AdminDashboard() {
     }
   });
 
+  // AI TOOLS USAGE STATISTICS
+  const totalAIUsage = await prisma.dailyUsage.aggregate({
+    _sum: { usageCount: true }
+  });
+
+  const todayAIUsage = await prisma.dailyUsage.aggregate({
+    _sum: { usageCount: true },
+    where: {
+      date: {
+        gte: new Date(new Date().setHours(0, 0, 0, 0))
+      }
+    }
+  });
+
+  // Top AI users
+  const topAIUsers = await prisma.user.findMany({
+    select: {
+      email: true,
+      isPro: true,
+      dailyUsages: {
+        select: {
+          usageCount: true
+        }
+      }
+    },
+    take: 10
+  });
+
+  // Calculate total AI usage per user
+  const topAIUsersWithTotal = topAIUsers.map(user => ({
+    email: user.email,
+    isPro: user.isPro,
+    totalUsage: user.dailyUsages.reduce((sum, usage) => sum + usage.usageCount, 0)
+  })).filter(user => user.totalUsage > 0)
+    .sort((a, b) => b.totalUsage - a.totalUsage)
+    .slice(0, 5);
+
   // Users yang menggunakan redeem code (assuming we track this in transactions)
   const redeemCodeUsage = await prisma.transaction.count({
     where: { 
@@ -327,6 +364,86 @@ export default async function AdminDashboard() {
               <div className="flex justify-between border-t pt-2">
                 <span className="text-sm text-muted-foreground">Renewal Risk:</span>
                 <span className="font-semibold text-orange-600">{expiringProUsers} users</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* AI TOOLS USAGE ANALYTICS */}
+      <div className="grid gap-4 md:grid-cols-3 mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-purple-600" />
+              AI Tools Usage
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Total AI Requests:</span>
+                <span className="font-semibold text-purple-600">{totalAIUsage._sum.usageCount || 0}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Today's Usage:</span>
+                <span className="font-semibold text-blue-600">{todayAIUsage._sum.usageCount || 0}</span>
+              </div>
+              <div className="flex justify-between border-t pt-2">
+                <span className="text-sm text-muted-foreground">Avg per User:</span>
+                <span className="font-semibold text-green-600">
+                  {totalUsers > 0 ? Math.round((totalAIUsage._sum.usageCount || 0) / totalUsers) : 0}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-orange-600" />
+              Top AI Users
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {topAIUsersWithTotal.length > 0 ? topAIUsersWithTotal.map((user, index) => (
+                <div key={user.email} className="flex justify-between text-sm">
+                  <span className="text-muted-foreground truncate max-w-[200px]">
+                    {user.email} {user.isPro && '👑'}
+                  </span>
+                  <span className="font-semibold">{user.totalUsage}x</span>
+                </div>
+              )) : (
+                <p className="text-sm text-muted-foreground">No AI usage yet</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Ticket className="h-5 w-5 text-indigo-600" />
+              Rate Limiting Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">Daily Limit (Free):</span>
+                <span className="font-semibold text-indigo-600">3 requests</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-muted-foreground">PRO Users:</span>
+                <span className="font-semibold text-yellow-600">Unlimited ∞</span>
+              </div>
+              <div className="flex justify-between border-t pt-2">
+                <span className="text-sm text-muted-foreground">Cost Savings:</span>
+                <span className="font-semibold text-green-600">
+                  ${Math.round((totalAIUsage._sum.usageCount || 0) * 0.001)} saved
+                </span>
               </div>
             </div>
           </CardContent>

@@ -33,6 +33,7 @@ export default function CVBuilderPage() {
   const [skills, setSkills] = useState("Skill 1, Skill 2, Skill 3");
 
   const [loadingAI, setLoadingAI] = useState(false);
+  const [usageInfo, setUsageInfo] = useState({ currentUsage: 0, maxUsage: 3, isPro: false });
 
   // --- HANDLERS ---
   const handlePersonal = (e: any) => setPersonal({ ...personal, [e.target.name]: e.target.value });
@@ -83,8 +84,18 @@ export default function CVBuilderPage() {
       
       if (json.success) {
         setSummary(json.data);
+        if (json.usageInfo) {
+          setUsageInfo(json.usageInfo);
+          if (!json.usageInfo.isPro) {
+            alert(`✅ Summary berhasil di-optimize!\n📊 Penggunaan AI hari ini: ${json.usageInfo.currentUsage}/${json.usageInfo.maxUsage}`);
+          }
+        }
       } else {
-        alert(`Gagal optimize summary: ${json.error || 'Unknown error'}`);
+        if (json.error?.includes('Daily AI usage limit')) {
+          alert(`❌ ${json.error}\n\n💎 Upgrade ke Pro untuk unlimited AI access!`);
+        } else {
+          alert(`❌ Gagal optimize summary: ${json.error || 'Unknown error'}`);
+        }
       }
     } catch (e) {
       console.error("Summary optimize error:", e);
@@ -116,8 +127,18 @@ export default function CVBuilderPage() {
       
       if (json.success && Array.isArray(json.data)) {
         updateExp(id, 'bullets', json.data);
+        if (json.usageInfo) {
+          setUsageInfo(json.usageInfo);
+          if (!json.usageInfo.isPro) {
+            alert(`✅ Bullet points berhasil di-optimize!\n📊 Penggunaan AI hari ini: ${json.usageInfo.currentUsage}/${json.usageInfo.maxUsage}`);
+          }
+        }
       } else {
-        alert(`Gagal optimize bullets: ${json.error || 'Response tidak valid'}`);
+        if (json.error?.includes('Daily AI usage limit')) {
+          alert(`❌ ${json.error}\n\n💎 Upgrade ke Pro untuk unlimited AI access!`);
+        } else {
+          alert(`❌ Gagal optimize bullets: ${json.error || 'Response tidak valid'}`);
+        }
       }
     } catch (e) {
       console.error("Bullets optimize error:", e);
@@ -149,8 +170,18 @@ export default function CVBuilderPage() {
       
       if (json.success) {
         setSkills(json.data);
+        if (json.usageInfo) {
+          setUsageInfo(json.usageInfo);
+          if (!json.usageInfo.isPro) {
+            alert(`✅ Skills berhasil di-optimize!\n📊 Penggunaan AI hari ini: ${json.usageInfo.currentUsage}/${json.usageInfo.maxUsage}`);
+          }
+        }
       } else {
-        alert(`Gagal optimize skills: ${json.error || 'Response tidak valid'}`);
+        if (json.error?.includes('Daily AI usage limit')) {
+          alert(`❌ ${json.error}\n\n💎 Upgrade ke Pro untuk unlimited AI access!`);
+        } else {
+          alert(`❌ Gagal optimize skills: ${json.error || 'Response tidak valid'}`);
+        }
       }
     } catch (e) {
       console.error("Skills optimize error:", e);
@@ -304,7 +335,20 @@ export default function CVBuilderPage() {
       
       {/* KIRI: EDITOR FORM */}
       <div className="w-full lg:w-1/3 bg-white border-r overflow-y-auto p-6 space-y-8 pb-32">
-        <h1 className="text-2xl font-bold text-gray-800">CV Builder</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-800">CV Builder</h1>
+          
+          {/* AI Usage Indicator */}
+          <div className="text-xs bg-gray-100 px-3 py-1 rounded-full border">
+            {usageInfo.isPro ? (
+              <span className="text-purple-600 font-bold">🔥 PRO: Unlimited</span>
+            ) : (
+              <span className="text-gray-600">
+                🤖 AI Today: <b>{usageInfo.currentUsage}/{usageInfo.maxUsage}</b>
+              </span>
+            )}
+          </div>
+        </div>
         
         {/* 1. PERSONAL & FOTO */}
         <div className="space-y-4">

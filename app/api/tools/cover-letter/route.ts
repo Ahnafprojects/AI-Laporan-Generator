@@ -1,10 +1,24 @@
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { checkDailyUsage, incrementDailyUsage } from "@/lib/rate-limit";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: Request) {
   try {
+    // Check rate limit FIRST
+    const rateLimitCheck = await checkDailyUsage(3);
+    
+    if (!rateLimitCheck.allowed) {
+      return NextResponse.json({ 
+        success: false, 
+        error: rateLimitCheck.error,
+        currentUsage: rateLimitCheck.currentUsage,
+        maxUsage: rateLimitCheck.maxUsage,
+        isPro: rateLimitCheck.isPro
+      }, { status: rateLimitCheck.status });
+    }
+
     const { name, university, major, position, company, skills, experience, language = "indonesian" } = await req.json();
 
     const systemPrompt = language === "english" 
@@ -117,6 +131,11 @@ export async function POST(req: Request) {
 
     const generatedText = completion.choices[0]?.message?.content || "";
 
+    // Increment usage count setelah berhasil
+    if (rateLimitCheck.userId) {
+      await incrementDailyUsage(rateLimitCheck.userId);
+    }
+
     return NextResponse.json({ 
       content: generatedText,
       language: language,
@@ -127,9 +146,17 @@ export async function POST(req: Request) {
         position,
         company,
         generatedAt: new Date().toISOString()
+      },
+      usageInfo: {
+        currentUsage: (rateLimitCheck.currentUsage || 0) + 1,
+        maxUsage: rateLimitCheck.maxUsage,
+        isPro: rateLimitCheck.isPro
       }
     });
   } catch (error) {
-    return NextResponse.json({ error: "Gagal generate" }, { status: 500 });
+    console.error("Cover letter generation error:", error);
+    return NextResponse.json({ 
+      error: "Gagal generate cover letter" 
+    }, { status: 500 });
   }
 }

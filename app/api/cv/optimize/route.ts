@@ -1,10 +1,24 @@
 import { NextResponse } from "next/server";
 import Groq from "groq-sdk";
+import { checkDailyUsage, incrementDailyUsage } from "@/lib/rate-limit";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: Request) {
   try {
+    // Check rate limit FIRST
+    const rateLimitCheck = await checkDailyUsage(3);
+    
+    if (!rateLimitCheck.allowed) {
+      return NextResponse.json({ 
+        success: false, 
+        error: rateLimitCheck.error,
+        currentUsage: rateLimitCheck.currentUsage,
+        maxUsage: rateLimitCheck.maxUsage,
+        isPro: rateLimitCheck.isPro
+      }, { status: rateLimitCheck.status });
+    }
+
     const { text, type, lang } = await req.json();
 
     console.log("CV Optimize Request:", { text, type, lang });
@@ -147,7 +161,20 @@ Improve ONLY the mentioned skills (don't add new ones):`;
 
     console.log("Final Data:", finalData);
 
-    return NextResponse.json({ success: true, data: finalData });
+    // Increment usage count setelah berhasil
+    if (rateLimitCheck.userId) {
+      await incrementDailyUsage(rateLimitCheck.userId);
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      data: finalData,
+      usageInfo: {
+        currentUsage: (rateLimitCheck.currentUsage || 0) + 1,
+        maxUsage: rateLimitCheck.maxUsage,
+        isPro: rateLimitCheck.isPro
+      }
+    });
 
   } catch (error: any) {
     console.error("CV Optimize Error:", error);
