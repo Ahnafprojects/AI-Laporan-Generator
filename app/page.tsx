@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Zap, FileText, ShieldCheck, ArrowRight, Star, Mail, Wand2 } from "lucide-react";
+import { CheckCircle2, Zap, FileText, ShieldCheck, ArrowRight, Star, Mail, Wand2, Link2, QrCode, Image, FileImage, Eraser, PenTool, Download, Merge, BadgeCheck, Users } from "lucide-react";
 
 export default async function Home() {
   const session = await getServerSession();
@@ -164,52 +164,249 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
             {/* Cover Letter Tool */}
-            <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/90 to-blue-50/60 backdrop-blur-2xl border border-white/40 hover:shadow-blue-500/20 hover:border-blue-200/50 transition-all duration-300 group">
-              <CardHeader className="text-center pb-4">
-                <div className="mx-auto mb-4 w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <Mail className="h-8 w-8 text-blue-600" />
+            <Link href="/tools/cover-letter" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Mail className="h-24 w-24 text-blue-600" />
+              </div>
+              
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-blue-100 p-3 w-fit">
+                  <Mail className="h-6 w-6 text-blue-600" />
                 </div>
-                <CardTitle className="text-xl text-blue-900">Surat Sakti</CardTitle>
-                <p className="text-sm text-slate-500">Cover Letter Generator</p>
-              </CardHeader>
-              <CardContent className="text-center space-y-4">
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  Bikin HRD jatuh cinta pada pandangan pertama lewat kata-kata. 
-                  Generate cover letter yang profesional dan menarik untuk lamaran kerja.
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  Surat Sakti
+                </h3>
+                
+                <p className="text-xs text-gray-400 mb-3">Cover Letter Generator</p>
+                
+                <p className="text-sm text-gray-500 mb-4 flex-1">
+                  Bikin HRD jatuh cinta pada pandangan pertama lewat kata-kata. Generate cover letter yang profesional dan menarik untuk lamaran kerja.
                 </p>
-                <Link href="/tools/cover-letter">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white group-hover:shadow-lg transition-all">
-                    Buat Cover Letter
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+                
+                <div className="flex items-center text-sm font-semibold text-blue-600">
+                  Buat Cover Letter <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                </div>
+              </div>
+            </Link>
 
             {/* CV Maker Tool */}
-            <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/90 to-purple-50/60 backdrop-blur-2xl border border-white/40 hover:shadow-purple-500/20 hover:border-purple-200/50 transition-all duration-300 group">
-              <CardHeader className="text-center pb-4">
-                <div className="mx-auto mb-4 w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <Wand2 className="h-8 w-8 text-purple-600" />
+            <Link href="/tools/cv-builder" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Wand2 className="h-24 w-24 text-purple-600" />
+              </div>
+              
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-purple-100 p-3 w-fit">
+                  <Wand2 className="h-6 w-6 text-purple-600" />
                 </div>
-                <CardTitle className="text-xl text-purple-900">CV Magic</CardTitle>
-                <p className="text-sm text-slate-500">CV Bullet Point Generator</p>
-              </CardHeader>
-              <CardContent className="text-center space-y-4">
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  Ubah pengalaman "biasa aja" jadi kalimat profesional yang lolos sistem ATS HRD. 
-                  Perfect untuk mahasiswa yang mau apply internship/kerja.
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
+                  CV Magic
+                </h3>
+                
+                <p className="text-xs text-gray-400 mb-3">CV Bullet Point Generator</p>
+                
+                <p className="text-sm text-gray-500 mb-4 flex-1">
+                  Ubah pengalaman "biasa aja" jadi kalimat profesional yang lolos sistem ATS HRD. Perfect untuk mahasiswa yang mau apply internship/kerja.
                 </p>
-                <Link href="/tools/cv-builder">
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white group-hover:shadow-lg transition-all">
-                    Sulap CV Kamu
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+                
+                <div className="flex items-center text-sm font-semibold text-purple-600">
+                  Sulap CV Kamu <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                </div>
+              </div>
+            </Link>
+
+            {/* Link Shortener & QR Tool */}
+            <Link href="/tools/link-shortener" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <QrCode className="h-24 w-24 text-green-600" />
+              </div>
+              
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-green-100 p-3 w-fit">
+                  <Link2 className="h-6 w-6 text-green-600" />
+                </div>
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">
+                  Link Shortener & QR
+                </h3>
+                
+                <p className="text-xs text-gray-400 mb-3">URL Shortener & QR Generator</p>
+                
+                <p className="text-sm text-gray-500 mb-4 flex-1">
+                  Pendekkan link ribet jadi simpel & generate QR Code HD otomatis. Cocok buat banner event & poster.
+                </p>
+                
+                <div className="flex items-center text-sm font-semibold text-green-600">
+                  Coba Sekarang <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                </div>
+              </div>
+            </Link>
+
+            {/* Image to PDF Tool */}
+            <Link href="/tools/image-to-pdf" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <FileText className="h-24 w-24 text-red-600" />
+              </div>
+              
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-red-100 p-3 w-fit">
+                  <Image className="h-6 w-6 text-red-600" />
+                </div>
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-red-600 transition-colors">
+                  JPG to PDF
+                </h3>
+                
+                <p className="text-xs text-gray-400 mb-3">Image to PDF Converter</p>
+                
+                <p className="text-sm text-gray-500 mb-4 flex-1">
+                  Scan tugas tulis tangan atau gabungkan foto KTP & Ijazah jadi satu file PDF. Privasi aman.
+                </p>
+                
+                <div className="flex items-center text-sm font-semibold text-red-600">
+                  Convert Sekarang <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                </div>
+              </div>
+            </Link>
+
+            {/* Image Compressor Tool */}
+            <Link href="/tools/image-compressor" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <FileImage className="h-24 w-24 text-orange-600" />
+              </div>
+              
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-orange-100 p-3 w-fit">
+                  <FileImage className="h-6 w-6 text-orange-600" />
+                </div>
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
+                  Image Compressor
+                </h3>
+                
+                <p className="text-xs text-gray-400 mb-3">Compress & Optimize Images</p>
+                
+                <p className="text-sm text-gray-500 mb-4 flex-1">
+                  Kecilkan ukuran foto tanpa hilang kualitas. Perfect untuk upload berkas lamaran atau website.
+                </p>
+                
+                <div className="flex items-center text-sm font-semibold text-orange-600">
+                  Compress Sekarang <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                </div>
+              </div>
+            </Link>
+
+            {/* AI Background Remover Tool */}
+            <Link href="/tools/remove-bg" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Eraser className="h-24 w-24 text-pink-600" />
+              </div>
+              
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-pink-100 p-3 w-fit">
+                  <Eraser className="h-6 w-6 text-pink-600" />
+                </div>
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-pink-600 transition-colors">
+                  AI Background Remover
+                </h3>
+                
+                <p className="text-xs text-gray-400 mb-3">Remove & Replace Background</p>
+                
+                <p className="text-sm text-gray-500 mb-4 flex-1">
+                  Hapus background foto otomatis & ganti warna Merah/Biru buat pas foto KTP/Wisuda. Gratis & HD.
+                </p>
+                
+                <div className="flex items-center text-sm font-semibold text-pink-600">
+                  Coba Sekarang <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                </div>
+              </div>
+            </Link>
+
+            {/* Digital Signature Tool */}
+            <Link href="/tools/signature" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <PenTool className="h-24 w-24 text-blue-600" />
+              </div>
+              
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-blue-100 p-3 w-fit">
+                  <Download className="h-6 w-6 text-blue-600" />
+                </div>
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  Tanda Tangan Digital
+                </h3>
+                
+                <p className="text-xs text-gray-400 mb-3">Digital Signature Maker</p>
+                
+                <p className="text-sm text-gray-500 mb-4 flex-1">
+                  Bikin tanda tangan digital background transparan. Tinggal tempel di Word/PDF tanpa perlu scan.
+                </p>
+                
+                <div className="flex items-center text-sm font-semibold text-blue-600">
+                  Mulai Gambar <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                </div>
+              </div>
+            </Link>
+
+            {/* PDF Merger Tool */}
+            <Link href="/tools/pdf-merger" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Merge className="h-24 w-24 text-purple-600" />
+              </div>
+              
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-purple-100 p-3 w-fit">
+                  <FileText className="h-6 w-6 text-purple-600" />
+                </div>
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
+                  PDF Merger
+                </h3>
+                
+                <p className="text-xs text-gray-400 mb-3">Combine PDF Files</p>
+                
+                <p className="text-sm text-gray-500 mb-4 flex-1">
+                  Satukan file Cover, Bab 1-5, dan Lampiran jadi satu file PDF utuh. Urutan bisa diatur.
+                </p>
+                
+                <div className="flex items-center text-sm font-semibold text-purple-600">
+                  Gabungkan File <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                </div>
+              </div>
+            </Link>
+
+            {/* Certificate Generator Tool */}
+            <Link href="/tools/certificate" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <BadgeCheck className="h-24 w-24 text-yellow-600" />
+              </div>
+              
+              <div className="relative z-10 flex flex-col h-full">
+                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-yellow-100 p-3 w-fit">
+                  <Users className="h-6 w-6 text-yellow-600" />
+                </div>
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">
+                  E-Certificate Generator
+                </h3>
+                
+                <p className="text-xs text-gray-400 mb-3">Bulk Certificate Maker</p>
+                
+                <p className="text-sm text-gray-500 mb-4 flex-1">
+                  Bikin 500+ sertifikat event otomatis dalam sekali klik. Tinggal upload template & list nama.
+                </p>
+                
+                <div className="flex items-center text-sm font-semibold text-yellow-600">
+                  Buat Sertifikat <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
+                </div>
+              </div>
+            </Link>
           </div>
 
           <div className="text-center mt-12">
