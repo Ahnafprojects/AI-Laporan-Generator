@@ -17,9 +17,19 @@ import {
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [isProActive, setIsProActive] = useState(false);
-  
+  const [scrolled, setScrolled] = useState(false);
+
   // Cek apakah user ini admin
   const isAdmin = session?.user?.email === "myticdance@gmail.com";
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Fetch PRO status
   useEffect(() => {
@@ -36,122 +46,115 @@ export default function Navbar() {
         }
       }
     };
-    
+
     if (status === 'authenticated') {
       fetchProStatus();
     }
   }, [session, status]);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 px-4 md:px-8 pt-4">
-      <nav className="max-w-7xl mx-auto bg-gradient-to-r from-white/70 via-blue-50/50 to-purple-50/50 backdrop-blur-2xl rounded-2xl border border-white/40 shadow-2xl shadow-blue-500/10 px-6 py-3">
+    <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4 px-4'}`}>
+      <nav className={`max-w-7xl mx-auto transition-all duration-300 ${scrolled
+          ? 'bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-white/20 shadow-sm rounded-none w-full max-w-none px-6 py-3'
+          : 'bg-white/60 dark:bg-black/60 backdrop-blur-2xl rounded-2xl border border-white/40 shadow-xl shadow-indigo-500/5 px-6 py-3'
+        }`}>
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+          <Link href="/" className="flex items-center gap-2 group">
             <div className="relative">
-              <Sparkles className="h-6 w-6 text-blue-600" />
-              <div className="absolute inset-0 h-6 w-6 text-purple-600 opacity-50 animate-pulse">
-                <Sparkles className="h-6 w-6" />
-              </div>
+              <Sparkles className="h-6 w-6 text-violet-600 transition-transform group-hover:rotate-12" />
+              <div className="absolute inset-0 h-6 w-6 text-purple-400 opacity-50 animate-pulse blur-sm"></div>
             </div>
-            <span className="text-gray-900 font-black">
+            <span className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600">
               SmartLabs
             </span>
           </Link>
 
           {/* Menu Kanan */}
           <div className="flex items-center gap-4">
-          
-          {/* LOGIC TOMBOL LOGIN / USER */}
-          {status === "loading" ? (
-            <div className="h-8 w-20 bg-slate-200 animate-pulse rounded" />
-          ) : status === "authenticated" ? (
-            // JIKA SUDAH LOGIN
-            <div className="flex items-center gap-4">
-              {/* PRO STATUS BUTTON - Different for PRO vs Free users */}
-              {isProActive ? (
-                <Link href="/upgrade">
-                  <div className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 backdrop-blur-sm text-yellow-700 rounded-full text-sm font-medium hover:from-yellow-400/30 hover:to-orange-400/30 transition-all duration-200 cursor-pointer border border-yellow-400/30">
-                    <Crown className="h-4 w-4" />
-                    PRO Member
-                  </div>
-                </Link>
-              ) : (
-                <Link href="/upgrade">
-                  <Button variant="outline" size="sm" className="text-blue-600 border-blue-300/50 hover:bg-blue-50/50 backdrop-blur-sm font-medium transition-all duration-200">
-                    <Crown className="h-4 w-4 mr-2" />
-                    Upgrade PRO
-                  </Button>
-                </Link>
-              )}
 
-              {/* <Link href="/create">
-                <Button variant="default" size="sm">
-                  + Buat Laporan
-                </Button>
-              </Link>
-               */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/20 transition-all duration-200">
-                    <User className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white/95 backdrop-blur-xl border-white/20 shadow-2xl">{" "}
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col">
-                      <span>{session.user?.name}</span>
-                      <span className="text-xs text-muted-foreground font-normal">{session.user?.email}</span>
+            {/* LOGIC TOMBOL LOGIN / USER */}
+            {status === "loading" ? (
+              <div className="h-9 w-24 bg-gray-200/50 animate-pulse rounded-full" />
+            ) : status === "authenticated" ? (
+              // JIKA SUDAH LOGIN
+              <div className="flex items-center gap-4">
+                {/* PRO STATUS BUTTON */}
+                {isProActive ? (
+                  <Link href="/upgrade">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-100/50 to-orange-100/50 border border-amber-200/50 backdrop-blur-md text-amber-700 rounded-full text-xs font-bold hover:shadow-md transition-all cursor-pointer">
+                      <Crown className="h-3.5 w-3.5 fill-amber-500 text-amber-600" />
+                      PRO MEMBER
                     </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  
-                  {/* TAMBAHKAN INI */}
-                  <Link href="/profile">
-                    <DropdownMenuItem className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      Profil & Riwayat
-                    </DropdownMenuItem>
                   </Link>
-                  {/* -------------- */}
+                ) : (
+                  <Link href="/upgrade">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 hover:bg-violet-50 hover:border-violet-200 hover:text-violet-600 rounded-full text-xs font-semibold transition-all cursor-pointer group">
+                      <Crown className="h-3.5 w-3.5 text-gray-400 group-hover:text-violet-500 transition-colors" />
+                      UPGRADE
+                    </div>
+                  </Link>
+                )}
 
-                  {/* MENU ADMIN KHUSUS */}
-                  {isAdmin && (
-                    <Link href="/admin">
-                      <DropdownMenuItem className="cursor-pointer bg-red-50 text-red-600 font-bold hover:bg-red-100 hover:text-red-700">
-                        <Users className="mr-2 h-4 w-4" />
-                        Admin Dashboard
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full ring-2 ring-white/50 hover:bg-violet-50 hover:text-violet-600 transition-all">
+                      <div className="h-full w-full rounded-full bg-gradient-to-tr from-violet-100 to-indigo-100 flex items-center justify-center">
+                        <User className="h-4 w-4" />
+                      </div>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-white/20 shadow-2xl p-2 rounded-xl">
+                    <DropdownMenuLabel className="px-3 py-2">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-gray-900">{session.user?.name}</span>
+                        <span className="text-xs text-gray-500 font-normal truncate">{session.user?.email}</span>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-gray-200/50" />
+
+                    <Link href="/profile">
+                      <DropdownMenuItem className="cursor-pointer rounded-lg focus:bg-violet-50 focus:text-violet-700 p-2.5">
+                        <User className="mr-2 h-4 w-4" />
+                        Profil & Riwayat
                       </DropdownMenuItem>
                     </Link>
-                  )}
-                  {/* ------------------ */}
 
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })} className="text-red-600 cursor-pointer">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ) : (
-            // JIKA BELUM LOGIN
-            <div className="flex gap-2">
-              <Link href="/login">
-                <Button variant="ghost" className="hover:bg-white/20 transition-all duration-200">
-                  Masuk
-                </Button>
-              </Link>
-              <Link href="/register">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg transition-all duration-200">
-                  Daftar
-                </Button>
-              </Link>
-            </div>
-          )}
+                    {isAdmin && (
+                      <Link href="/admin">
+                        <DropdownMenuItem className="cursor-pointer rounded-lg bg-red-50 text-red-600 font-bold focus:bg-red-100 focus:text-red-700 p-2.5 mt-1">
+                          <Users className="mr-2 h-4 w-4" />
+                          Admin Dashboard
+                        </DropdownMenuItem>
+                      </Link>
+                    )}
+
+                    <DropdownMenuSeparator className="bg-gray-200/50" />
+                    <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })} className="text-red-600 cursor-pointer rounded-lg focus:bg-red-50 focus:text-red-700 p-2.5">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Keluar
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              // JIKA BELUM LOGIN
+              <div className="flex gap-3">
+                <Link href="/login">
+                  <Button variant="ghost" className="hover:bg-violet-50 hover:text-violet-600 rounded-full font-medium transition-all">
+                    Masuk
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button className="rounded-full bg-black hover:bg-gray-800 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                    Daftar Gratis
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
     </div>
   );
 }

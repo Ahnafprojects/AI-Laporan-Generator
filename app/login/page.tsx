@@ -85,20 +85,35 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50">
-      <Card className="w-full max-w-md shadow-2xl bg-gradient-to-br from-white/90 to-blue-50/50 backdrop-blur-2xl border border-white/40">
-        <CardHeader>
-          <CardTitle className="text-center">Masuk ke Akun</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50">
+
+      {/* LIQUID BACKGROUND */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="liquid-blob bg-purple-400 top-0 left-0 opacity-20"></div>
+        <div className="liquid-blob bg-blue-400 bottom-0 right-0 animation-delay-4000 opacity-20"></div>
+      </div>
+
+      <div className="w-full max-w-md p-4 relative z-10 animate-in fade-in zoom-in duration-500">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-block mb-4">
+            <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600">
+              AI Laporan
+            </span>
+          </Link>
+          <h1 className="text-2xl font-bold text-gray-900">Selamat Datang Kembali! 👋</h1>
+          <p className="text-gray-500 mt-2">Masuk untuk mulai generate laporanmu.</p>
+        </div>
+
+        <div className="glass-panel p-8 rounded-2xl">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <Input
                 type="email"
-                placeholder="Email"
+                placeholder="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="bg-white/50 border-gray-200 focus:bg-white transition-all h-12"
               />
             </div>
             <div className="relative">
@@ -108,12 +123,13 @@ function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="bg-white/50 border-gray-200 focus:bg-white transition-all h-12 pr-10"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-400 hover:text-gray-600"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
@@ -123,26 +139,26 @@ function LoginForm() {
                 )}
               </Button>
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Memproses..." : "Masuk"}
+
+            <div className="flex justify-end">
+              <Link href="/forgot-password" className="text-sm font-medium text-violet-600 hover:text-violet-700 hover:underline">
+                Lupa Password?
+              </Link>
+            </div>
+
+            <Button type="submit" className="w-full h-12 text-lg rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-indigo-200 transition-all hover:scale-[1.02]" disabled={isLoading}>
+              {isLoading ? "Memproses..." : "Masuk Sekarang"}
             </Button>
           </form>
-          
-          {/* Lupa Password Link */}
-          <div className="text-center mt-4">
-            <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
-              Lupa Password?
-            </Link>
-          </div>
-          
-          <p className="text-center text-sm text-gray-600 mt-4">
-            Belum punya akun?{" "}
-            <Link href="/register" className="text-blue-600 hover:underline">
-              Daftar di sini
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
+        </div>
+
+        <p className="text-center text-gray-600 mt-8">
+          Belum punya akun?{" "}
+          <Link href="/register" className="font-bold text-violet-600 hover:underline">
+            Daftar Gratis
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

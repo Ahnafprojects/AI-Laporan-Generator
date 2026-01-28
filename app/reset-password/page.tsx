@@ -19,7 +19,7 @@ function ResetPasswordForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!token) {
       toast({
         title: "Error",
@@ -31,7 +31,7 @@ function ResetPasswordForm() {
 
     if (password !== confirmPassword) {
       toast({
-        title: "Error", 
+        title: "Error",
         description: "Password dan konfirmasi password tidak sama",
         variant: "destructive"
       });
@@ -48,7 +48,7 @@ function ResetPasswordForm() {
     }
 
     setIsLoading(true);
-    
+
     try {
       const res = await fetch('/api/auth/reset-password', {
         method: 'POST',
@@ -89,35 +89,43 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-red-600">Token Tidak Valid</CardTitle>
-            <CardDescription>
-              Token reset password tidak valid atau sudah expired
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => router.push('/forgot-password')} className="w-full">
-              Kembali ke Lupa Password
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50">
+        {/* LIQUID BACKGROUND */}
+        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+          <div className="liquid-blob bg-red-400 top-20 right-20 opacity-20"></div>
+          <div className="liquid-blob bg-orange-400 bottom-10 left-10 animation-delay-2000 opacity-20"></div>
+        </div>
+
+        <div className="glass-panel p-8 rounded-2xl max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+            <span className="text-2xl">⚠️</span>
+          </div>
+          <h2 className="text-xl font-bold text-red-600 mb-2">Token Tidak Valid</h2>
+          <p className="text-gray-500 mb-6">Link reset password ini sudah kadaluarsa atau tidak valid.</p>
+          <Button onClick={() => router.push('/forgot-password')} className="w-full bg-red-600 hover:bg-red-700 text-white rounded-xl h-11">
+            Kirim Ulang Link
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Reset Password</CardTitle>
-          <CardDescription>
-            Masukkan password baru untuk akun Anda
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 py-10">
+      {/* LIQUID BACKGROUND */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="liquid-blob bg-teal-400 top-20 right-20 opacity-20"></div>
+        <div className="liquid-blob bg-emerald-400 bottom-10 left-10 animation-delay-2000 opacity-20"></div>
+      </div>
+
+      <div className="w-full max-w-md p-4 relative z-10 animate-in fade-in zoom-in duration-500">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">Reset Password 🔒</h1>
+          <p className="text-gray-500 mt-2">Buat password baru yang kuat dan aman.</p>
+        </div>
+
+        <div className="glass-panel p-8 rounded-2xl">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="password">Password Baru</Label>
               <Input
@@ -125,13 +133,14 @@ function ResetPasswordForm() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Masukkan password baru"
+                placeholder="Minimal 6 karakter"
                 required
                 minLength={6}
                 disabled={isLoading}
+                className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11"
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Konfirmasi Password</Label>
               <Input
@@ -139,19 +148,20 @@ function ResetPasswordForm() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Konfirmasi password baru"
+                placeholder="Ulangi password baru"
                 required
                 minLength={6}
                 disabled={isLoading}
+                className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11"
               />
             </div>
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full h-12 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02]"
               disabled={isLoading}
             >
-              {isLoading ? 'Memproses...' : 'Reset Password'}
+              {isLoading ? 'Memproses...' : 'Ubah Password'}
             </Button>
           </form>
 
@@ -160,12 +170,13 @@ function ResetPasswordForm() {
               variant="ghost"
               onClick={() => router.push('/login')}
               disabled={isLoading}
+              className="text-gray-500 hover:text-teal-600 font-medium"
             >
               Kembali ke Login
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

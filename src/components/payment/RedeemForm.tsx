@@ -32,7 +32,7 @@ export default function RedeemForm() {
       toast({ title: "Berhasil!", description: data.message });
       setCode(""); // Reset input
       router.refresh(); // Refresh halaman biar status berubah
-      
+
       // Opsional: Reload window biar limit di frontend langsung update
       setTimeout(() => window.location.reload(), 1000);
 
@@ -44,19 +44,21 @@ export default function RedeemForm() {
   };
 
   return (
-    <div className="mt-4 p-4 border border-dashed rounded-lg bg-slate-50 dark:bg-slate-900">
-      <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-        <Ticket className="h-4 w-4 text-blue-500" />
-        Punya Kode Voucher?
+    <div className="bg-white/40 backdrop-blur-sm p-5 rounded-xl border border-white/40 shadow-sm mt-4">
+      <h3 className="text-sm font-bold mb-3 flex items-center gap-2 text-gray-800">
+        <div className="p-1.5 bg-blue-100 rounded-lg text-blue-600">
+          <Ticket className="h-4 w-4" />
+        </div>
+        Punya Kode Voucher untuk Kuota?
       </h3>
       <form onSubmit={handleRedeem} className="flex gap-2">
-        <Input 
-          placeholder="Masukkan kode..." 
-          value={code} 
+        <Input
+          placeholder="Masukkan kode voucher..."
+          value={code}
           onChange={(e) => setCode(e.target.value)}
-          className="bg-white dark:bg-slate-950"
+          className="bg-white/70 border-gray-200 focus:bg-white transition-all h-10"
         />
-        <Button type="submit" variant="secondary" disabled={loading || !code}>
+        <Button type="submit" className="bg-slate-800 hover:bg-slate-900 text-white h-10 px-4 rounded-lg" disabled={loading || !code}>
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Klaim"}
         </Button>
       </form>

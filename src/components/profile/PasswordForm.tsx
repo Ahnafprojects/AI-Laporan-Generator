@@ -41,18 +41,19 @@ export default function PasswordForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-4 py-4 max-w-md">
       <div className="space-y-2">
-        <Label>Password Lama</Label>
+        <Label className="text-gray-700">Password Lama</Label>
         <div className="relative">
-          <Input 
-            name="currentPassword" 
-            type={showCurrentPassword ? "text" : "password"} 
-            required 
+          <Input
+            name="currentPassword"
+            type={showCurrentPassword ? "text" : "password"}
+            required
+            className="bg-white/50 border-gray-200 focus:bg-white transition-all focus:ring-violet-500 pr-10"
           />
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-400 hover:text-gray-600"
             onClick={() => setShowCurrentPassword(!showCurrentPassword)}
           >
             {showCurrentPassword ? (
@@ -64,19 +65,20 @@ export default function PasswordForm() {
         </div>
       </div>
       <div className="space-y-2">
-        <Label>Password Baru</Label>
+        <Label className="text-gray-700">Password Baru</Label>
         <div className="relative">
-          <Input 
-            name="newPassword" 
-            type={showNewPassword ? "text" : "password"} 
-            required 
-            minLength={6} 
+          <Input
+            name="newPassword"
+            type={showNewPassword ? "text" : "password"}
+            required
+            minLength={6}
+            className="bg-white/50 border-gray-200 focus:bg-white transition-all focus:ring-violet-500 pr-10"
           />
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-400 hover:text-gray-600"
             onClick={() => setShowNewPassword(!showNewPassword)}
           >
             {showNewPassword ? (
@@ -87,7 +89,7 @@ export default function PasswordForm() {
           </Button>
         </div>
       </div>
-      <Button type="submit" variant="secondary" disabled={loading}>
+      <Button type="submit" disabled={loading} className="w-full bg-slate-800 hover:bg-slate-900 text-white rounded-lg">
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         <KeyRound className="mr-2 h-4 w-4" /> Ganti Password
       </Button>

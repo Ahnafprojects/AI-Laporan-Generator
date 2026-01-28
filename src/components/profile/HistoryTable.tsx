@@ -25,20 +25,20 @@ export default function HistoryTable({ reports: initialReports }: { reports: Rep
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
-  const [deleteDialog, setDeleteDialog] = useState<{isOpen: boolean, reportId: string, reportTitle: string}>({
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean, reportId: string, reportTitle: string }>({
     isOpen: false,
     reportId: '',
     reportTitle: ''
   });
   const { toast } = useToast();
-  
+
   const itemsPerPage = 5;
 
   // Filter reports berdasarkan search query
   const filteredReports = useMemo(() => {
     if (!searchQuery) return reports;
-    
-    return reports.filter(report => 
+
+    return reports.filter(report =>
       report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       report.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
       report.lecturer?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -69,7 +69,7 @@ export default function HistoryTable({ reports: initialReports }: { reports: Rep
   const confirmDelete = async () => {
     const { reportId, reportTitle } = deleteDialog;
     setIsDeleting(reportId);
-    
+
     try {
       const response = await fetch("/api/reports/delete", {
         method: "DELETE",
@@ -85,7 +85,7 @@ export default function HistoryTable({ reports: initialReports }: { reports: Rep
 
       // Remove from local state
       setReports(prev => prev.filter(r => r.id !== reportId));
-      
+
       toast({
         title: "Berhasil!",
         description: "Laporan telah dihapus.",
@@ -125,105 +125,115 @@ export default function HistoryTable({ reports: initialReports }: { reports: Rep
   return (
     <>
       <div className="space-y-6">
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-        <Input
-          placeholder="Cari laporan berdasarkan judul, mata kuliah, atau dosen..."
-          value={searchQuery}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          className="pl-10"
-        />
-      </div>
-
-      {/* Results Info */}
-      {searchQuery && (
-        <p className="text-sm text-muted-foreground">
-          Menampilkan {filteredReports.length} dari {reports.length} laporan
-        </p>
-      )}
-
-      {/* Reports List */}
-      {currentReports.length === 0 ? (
-        <div className="text-center py-10 text-muted-foreground">
-          <p>Tidak ada laporan yang ditemukan.</p>
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Cari laporan berdasarkan judul, mata kuliah, atau dosen..."
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            className="pl-10"
+          />
         </div>
-      ) : (
-        <div className="space-y-4">
-          {currentReports.map((report) => (
-            <Card key={report.id} className="overflow-hidden hover:shadow-md transition-shadow">
-              <CardContent className="p-0">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-4">
-                  
-                  <div className="flex items-start gap-4 flex-1">
-                    <div className="p-2 bg-blue-100 text-blue-600 rounded-lg mt-1">
-                      <FileText className="h-6 w-6" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-lg leading-tight">{report.title}</h4>
-                      <p className="text-sm text-muted-foreground">{report.subject}</p>
-                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 text-xs text-gray-500 mt-2">
-                        <span>Praktikum: {format(new Date(report.practiceDate), "dd MMM yyyy", { locale: idLocale })}</span>
-                        <span>Dosen: {report.lecturer || "Tidak disebutkan"}</span>
-                        <span>Dibuat: {format(new Date(report.createdAt), "dd MMM yyyy HH:mm", { locale: idLocale })}</span>
+
+        {/* Results Info */}
+        {searchQuery && (
+          <p className="text-sm text-muted-foreground">
+            Menampilkan {filteredReports.length} dari {reports.length} laporan
+          </p>
+        )}
+
+        {/* Reports List */}
+        {currentReports.length === 0 ? (
+          <div className="text-center py-10 text-muted-foreground">
+            <p>Tidak ada laporan yang ditemukan.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {currentReports.map((report) => (
+              <div key={report.id} className="glass-card hover:bg-white/80 transition-all rounded-xl p-0 border border-white/40 shadow-sm relative group overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-400 to-violet-500 opacity-80"></div>
+                <div className="p-5">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+
+                    <div className="flex items-start gap-4 flex-1">
+                      <div className="p-3 bg-blue-50 text-blue-600 rounded-xl mt-1 shadow-sm border border-blue-100">
+                        <FileText className="h-6 w-6" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-lg leading-tight text-gray-900 group-hover:text-blue-700 transition-colors">{report.title}</h4>
+                        <p className="text-sm text-gray-500 font-medium mt-1">{report.subject}</p>
+
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-400 mt-3">
+                          <div className="flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                            Praktikum: {format(new Date(report.practiceDate), "dd MMM yyyy", { locale: idLocale })}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                            Dosen: {report.lecturer || "-"}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                            Dibuat: {format(new Date(report.createdAt), "dd MMM HH:mm", { locale: idLocale })}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <Link href={`/preview/${report.id}`} className="flex-1 sm:flex-none">
-                      <Button className="w-full sm:w-auto" size="sm">
-                        Buka <ArrowRight className="ml-2 h-4 w-4" />
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <Link href={`/preview/${report.id}`} className="flex-1 sm:flex-none">
+                        <Button className="w-full sm:w-auto rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm" size="sm">
+                          Buka <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteReport(report.id, report.title)}
+                        disabled={isDeleting === report.id}
+                        className="text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                      >
+                        {isDeleting === report.id ? (
+                          <div className="h-4 w-4 animate-spin border-2 border-red-600 border-t-transparent rounded-full" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
                       </Button>
-                    </Link>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteReport(report.id, report.title)}
-                      disabled={isDeleting === report.id}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      {isDeleting === report.id ? (
-                        <div className="h-4 w-4 animate-spin border-2 border-red-600 border-t-transparent rounded-full" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
-                    </Button>
+                    </div>
                   </div>
-                  
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Halaman {currentPage} dari {totalPages} ({filteredReports.length} laporan)
-          </p>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+              </div>
+            ))}
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Halaman {currentPage} dari {totalPages} ({filteredReports.length} laporan)
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Delete Confirmation Dialog */}

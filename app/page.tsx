@@ -1,431 +1,198 @@
-import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2, Zap, FileText, ShieldCheck, ArrowRight, Star, Mail, Wand2, Link2, QrCode, Image, FileImage, Eraser, PenTool, Download, Merge, BadgeCheck, Users } from "lucide-react";
+import { CheckCircle2, Zap, FileText, ShieldCheck, ArrowRight, Star, Mail, Wand2, Link2, QrCode, Image, FileImage, Eraser, PenTool, Download, Merge, BadgeCheck, Users, AlignLeft, Lock, Braces, Receipt, Type, Timer, ArrowRightLeft, GitCompare, FileType, Sparkles } from "lucide-react";
+import Link from "next/link";
+import Navbar from "@/components/layout/Navbar";
+import ToolsSection from "@/components/home/ToolsSection";
+
 
 export default async function Home() {
   const session = await getServerSession();
 
   return (
-    <div className="flex flex-col min-h-screen">
-      
-      {/* HERO SECTION */}
-      <section className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 dark:bg-slate-950">
-        <div className="container px-4 md:px-6 relative z-10 text-center">
-          <div className="inline-block px-3 py-1 mb-4 text-sm font-semibold tracking-wider text-blue-600 uppercase bg-blue-100 rounded-full">
-            Untuk Mahasiswa
-          </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50 sm:text-6xl mb-6">
-            Bikin Laporan Praktikum <br className="hidden sm:inline" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-              Cuma 10 Detik.
-            </span>
-          </h1>
-          <p className="max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-400 mb-8">
-            Gak perlu lagi begadang mikirin kata-kata "Analisa" dan "Kesimpulan". 
-            Paste soal, paste kodingan, biarkan AI yang menyusun Laporan Praktikum berkualitas buat kamu.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {session ? (
-              <Link href="/create">
-                <Button size="lg" className="h-12 px-8 text-lg shadow-xl shadow-blue-500/20">
-                  <Zap className="mr-2 h-5 w-5 fill-current" /> Mulai Generate
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link href="/register">
-                  <Button size="lg" className="h-12 px-8 text-lg shadow-xl shadow-blue-500/20">
-                    Daftar Gratis Sekarang
-                  </Button>
-                </Link>
-                <Link href="/login">
-                  <Button variant="outline" size="lg" className="h-12 px-8 text-lg">
-                    Masuk Akun
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
-          
-          <p className="mt-4 text-sm text-slate-500">
-            *Format otomatis sesuai standar Laporan Praktikum.
-          </p>
-        </div>
+    <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-950">
 
-        {/* Background Decoration */}
-        <div className="absolute top-0 left-1/2 w-[1000px] h-[500px] bg-blue-400/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+      {/* LIQUID BACKGROUND BLOBS */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="liquid-blob bg-purple-400 top-0 left-0"></div>
+        <div className="liquid-blob bg-yellow-300 top-0 right-0 animation-delay-2000"></div>
+        <div className="liquid-blob bg-pink-400 bottom-0 left-20 animation-delay-4000"></div>
+      </div>
+
+      <Navbar />
+
+      {/* HERO SECTION */}
+      <section className="relative pt-32 pb-20 px-4 md:px-6">
+        <div className="container mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+
+            {/* Left Content */}
+            <div className="space-y-6 text-center lg:text-left z-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-100/80 text-violet-700 border border-violet-200 backdrop-blur-md mb-4 animate-in fade-in slide-in-from-bottom-5 duration-700">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+                </span>
+                <span className="text-xs font-bold tracking-wide">UNTUK MAHASISWA</span>
+              </div>
+
+              <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[1.1] animate-in fade-in slide-in-from-bottom-10 duration-1000">
+                Bikin Laporan Praktikum <br />
+                <span className="text-gradient">Cuma 10 Detik.</span>
+              </h1>
+
+              <p className="text-xl text-gray-600 dark:text-gray-300 font-medium max-w-xl mx-auto lg:mx-0 leading-relaxed animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
+                Gak perlu lagi begadang mikirin kata-kata "Analisa" dan "Kesimpulan". Paste soal, paste kodingan, biarkan AI yang menyusun Laporan Praktikum berkualitas buat kamu.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4 animate-in fade-in slide-in-from-bottom-14 duration-1000 delay-300">
+                <Link href={session ? "/create" : "/login"}>
+                  <Button size="lg" className="h-14 px-8 text-lg rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-xl shadow-indigo-200 dark:shadow-indigo-900 transition-all hover:scale-105">
+                    <Wand2 className="mr-2 h-5 w-5" /> Mulai Generate
+                  </Button>
+                </Link>
+                <div className="text-xs text-gray-400 flex items-center justify-center lg:justify-start mt-2 sm:mt-0">
+                  *Format otomatis sesuai standar Laporan Praktikum
+                </div>
+              </div>
+            </div>
+
+            {/* Right Visual - Glass Card */}
+            <div className="relative animate-in fade-in zoom-in duration-1000 delay-500">
+              <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-violet-600 rounded-2xl blur opacity-30 animate-pulse"></div>
+              <div className="glass-panel p-6 rounded-2xl relative">
+                <div className="flex items-center gap-2 mb-4 border-b border-gray-100/50 pb-4">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-400/80"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-400/80"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-400/80"></div>
+                  </div>
+                  <span className="text-xs text-gray-400 font-mono ml-2">Laporan_Praktikum.docx</span>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="p-4 bg-violet-50/50 rounded-lg border border-violet-100/50">
+                    <div className="h-2 w-24 bg-violet-200/50 rounded mb-2"></div>
+                    <div className="h-2 w-full bg-violet-200/50 rounded mb-1"></div>
+                    <div className="h-2 w-2/3 bg-violet-200/50 rounded"></div>
+                  </div>
+                  <div className="flex justify-center">
+                    <div className="p-2 bg-white/50 backdrop-blur rounded-full shadow-sm animate-bounce">
+                      <ArrowRight className="h-4 w-4 text-violet-500" />
+                    </div>
+                  </div>
+                  <div className="p-4 bg-white/60 rounded-lg border border-white/50 shadow-sm">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Sparkles className="h-4 w-4 text-amber-400" />
+                      <div className="h-2.5 w-32 bg-gray-800 rounded"></div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="h-2 w-full bg-gray-200 rounded"></div>
+                      <div className="h-2 w-full bg-gray-200 rounded"></div>
+                      <div className="h-2 w-full bg-gray-200 rounded"></div>
+                      <div className="h-2 w-3/4 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating Elements */}
+                <div className="absolute -right-6 top-20 glass-card p-3 rounded-xl animate-bounce delay-700">
+                  <ShieldCheck className="h-6 w-6 text-emerald-500" />
+                </div>
+                <div className="absolute -left-4 bottom-10 glass-card p-3 rounded-xl animate-bounce delay-1000">
+                  <Zap className="h-6 w-6 text-amber-500" />
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </section>
 
-      {/* FEATURES SECTION */}
-      <section className="py-20 bg-white dark:bg-slate-900 border-t">
-        <div className="container px-4 md:px-6">
+      {/* WHY USE THIS SECTION */}
+      <section className="py-20 relative">
+        <div className="container px-4 md:px-6 mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight mb-4">Kenapa Harus Pakai Ini?</h2>
-            <p className="text-slate-500 max-w-xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 mb-4">
+              Kenapa Harus Pakai Ini?
+            </h2>
+            <p className="text-gray-500 max-w-2xl mx-auto">
               Dibuat khusus untuk mahasiswa yang ingin produktif, bukan malas. Fokus ke ngodingnya, laporannya biar AI yang bantu rapikan.
             </p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-3">
-            <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/80 to-blue-50/50 backdrop-blur-xl border border-white/40">
-              <CardHeader>
-                <FileText className="h-10 w-10 text-blue-600 mb-2" />
-                <CardTitle>Format Profesional</CardTitle>
-              </CardHeader>
-              <CardContent className="text-slate-600">
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <div className="glass-card p-8 rounded-3xl text-center hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-16 w-16 mx-auto bg-blue-100 rounded-2xl flex items-center justify-center mb-6 text-blue-600">
+                <FileText className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Format Profesional</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
                 Otomatis layout, Cover page profesional, dan struktur laporan yang rapi dan terorganisir.
-              </CardContent>
-            </Card>
+              </p>
+            </div>
 
-            <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/80 to-yellow-50/50 backdrop-blur-xl border border-white/40">
-              <CardHeader>
-                <Zap className="h-10 w-10 text-yellow-500 mb-2" />
-                <CardTitle>AI Super Cerdas</CardTitle>
-              </CardHeader>
-              <CardContent className="text-slate-600">
+            {/* Feature 2 */}
+            <div className="glass-card p-8 rounded-3xl text-center hover:-translate-y-2 transition-transform duration-300 border-violet-200/50">
+              <div className="h-16 w-16 mx-auto bg-violet-100 rounded-2xl flex items-center justify-center mb-6 text-violet-600 shadow-violet-200 shadow-lg">
+                <Sparkles className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">AI Super Cerdas</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
                 Menggunakan Llama-3 70B yang paham konteks, OS, Jarkom, dan Web. Analisanya mendalam, bukan "kulitnya" doang.
-              </CardContent>
-            </Card>
+              </p>
+            </div>
 
-            <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/80 to-green-50/50 backdrop-blur-xl border border-white/40">
-              <CardHeader>
-                <ShieldCheck className="h-10 w-10 text-green-600 mb-2" />
-                <CardTitle>Privasi Aman</CardTitle>
-              </CardHeader>
-              <CardContent className="text-slate-600">
+            {/* Feature 3 */}
+            <div className="glass-card p-8 rounded-3xl text-center hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-16 w-16 mx-auto bg-emerald-100 rounded-2xl flex items-center justify-center mb-6 text-emerald-600">
+                <ShieldCheck className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Privasi Aman</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
                 Data kamu aman. Password dienkripsi, email diverifikasi. Kamu punya kendali penuh untuk hapus history laporanmu.
-              </CardContent>
-            </Card>
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-20 bg-slate-50 dark:bg-slate-950 border-t">
-        <div className="container px-4 md:px-6">
-          <div className="flex flex-col md:flex-row items-center gap-12">
-            <div className="flex-1 space-y-6">
-              <h2 className="text-3xl font-bold tracking-tight">Cara Kerja Magic-nya 🪄</h2>
-              <ul className="space-y-4">
+      <section className="py-20">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="glass-panel rounded-3xl p-8 md:p-12 overflow-hidden relative">
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+            <div className="relative z-10">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold mb-4">Cara Kerja Magic-nya 🪄</h2>
+              </div>
+
+              <div className="grid md:grid-cols-5 gap-6 text-center">
                 {[
-                  "Login & Masuk ke menu Buat Laporan.",
-                  "Copy-Paste soal dari PDF Modul Praktikum.",
-                  "Paste kodingan jawaban kamu.",
-                  "Klik Generate & Tunggu ~10 detik.",
-                  "Review hasilnya, lalu Download Word."
-                ].map((step, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <CheckCircle2 className="h-6 w-6 text-blue-600 shrink-0" />
-                    <span className="text-lg">{step}</span>
-                  </li>
+                  { step: 1, title: "Login", desc: "Masuk ke menu Buat Laporan" },
+                  { step: 2, title: "Paste Soal", desc: "Copy dari PDF Modul Praktikum" },
+                  { step: 3, title: "Paste Kodingan", desc: "Jawaban coding kamu" },
+                  { step: 4, title: "Generate", desc: "Klik & Tunggu ~10 detik" },
+                  { step: 5, title: "Download", desc: "Review & Download Word" }
+                ].map((item, i) => (
+                  <div key={i} className="relative group">
+                    <div className="w-12 h-12 mx-auto bg-white shadow-md rounded-full flex items-center justify-center font-bold text-violet-600 mb-4 group-hover:scale-110 transition-transform">
+                      {item.step}
+                    </div>
+                    <h4 className="font-bold mb-1">{item.title}</h4>
+                    <p className="text-xs text-gray-500">{item.desc}</p>
+                    {i !== 4 && <div className="hidden md:block absolute top-6 left-1/2 w-full h-[2px] bg-gray-200 -z-10 transform translate-x-1/2"></div>}
+                  </div>
                 ))}
-              </ul>
-              <div className="pt-4">
-                 <Link href="/register">
-                  <Button variant="link" className="text-blue-600 p-0 h-auto font-semibold">
-                    Cobain sendiri sekarang <ArrowRight className="ml-1 h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            
-            {/* Visualisasi Mockup Sederhana */}
-            <div className="flex-1 bg-gradient-to-br from-white/90 to-slate-50/80 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/50 rotate-2 hover:rotate-0 transition-transform duration-500">
-              <div className="flex items-center gap-2 mb-4 border-b pb-2">
-                <div className="w-3 h-3 rounded-full bg-red-500" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                <div className="w-3 h-3 rounded-full bg-green-500" />
-                <div className="text-xs text-slate-400 ml-2">Preview Laporan</div>
-              </div>
-              <div className="space-y-3 opacity-50">
-                <div className="h-4 bg-slate-200 rounded w-3/4" />
-                <div className="h-4 bg-slate-200 rounded w-full" />
-                <div className="h-4 bg-slate-200 rounded w-5/6" />
-                <div className="h-32 bg-slate-100 rounded border border-slate-300 flex items-center justify-center text-slate-400 text-sm">
-                  [Code Block Area]
-                </div>
-                <div className="h-4 bg-slate-200 rounded w-full" />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* TOOLS SECTION */}
-      <section className="py-20 bg-gradient-to-br from-purple-50/70 via-blue-50/50 to-pink-50/70 dark:from-purple-950/20 dark:to-blue-950/20">
-        <div className="container px-4 md:px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight mb-4">Tools Tambahan</h2>
-            <p className="text-slate-500 max-w-xl mx-auto">
-              Tidak hanya laporan praktikum, kami juga punya tools lain untuk membantu perjalanan akademik dan karier kamu.
-            </p>
-          </div>
+      <ToolsSection isLoggedIn={!!session} />
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
-            {/* Cover Letter Tool */}
-            <Link href="/tools/cover-letter" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Mail className="h-24 w-24 text-blue-600" />
-              </div>
-              
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-blue-100 p-3 w-fit">
-                  <Mail className="h-6 w-6 text-blue-600" />
-                </div>
-                
-                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                  Surat Sakti
-                </h3>
-                
-                <p className="text-xs text-gray-400 mb-3">Cover Letter Generator</p>
-                
-                <p className="text-sm text-gray-500 mb-4 flex-1">
-                  Bikin HRD jatuh cinta pada pandangan pertama lewat kata-kata. Generate cover letter yang profesional dan menarik untuk lamaran kerja.
-                </p>
-                
-                <div className="flex items-center text-sm font-semibold text-blue-600">
-                  Buat Cover Letter <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* CV Maker Tool */}
-            <Link href="/tools/cv-builder" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Wand2 className="h-24 w-24 text-purple-600" />
-              </div>
-              
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-purple-100 p-3 w-fit">
-                  <Wand2 className="h-6 w-6 text-purple-600" />
-                </div>
-                
-                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
-                  CV Magic
-                </h3>
-                
-                <p className="text-xs text-gray-400 mb-3">CV Bullet Point Generator</p>
-                
-                <p className="text-sm text-gray-500 mb-4 flex-1">
-                  Ubah pengalaman "biasa aja" jadi kalimat profesional yang lolos sistem ATS HRD. Perfect untuk mahasiswa yang mau apply internship/kerja.
-                </p>
-                
-                <div className="flex items-center text-sm font-semibold text-purple-600">
-                  Sulap CV Kamu <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Link Shortener & QR Tool */}
-            <Link href="/tools/link-shortener" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <QrCode className="h-24 w-24 text-green-600" />
-              </div>
-              
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-green-100 p-3 w-fit">
-                  <Link2 className="h-6 w-6 text-green-600" />
-                </div>
-                
-                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">
-                  Link Shortener & QR
-                </h3>
-                
-                <p className="text-xs text-gray-400 mb-3">URL Shortener & QR Generator</p>
-                
-                <p className="text-sm text-gray-500 mb-4 flex-1">
-                  Pendekkan link ribet jadi simpel & generate QR Code HD otomatis. Cocok buat banner event & poster.
-                </p>
-                
-                <div className="flex items-center text-sm font-semibold text-green-600">
-                  Coba Sekarang <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Image to PDF Tool */}
-            <Link href="/tools/image-to-pdf" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <FileText className="h-24 w-24 text-red-600" />
-              </div>
-              
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-red-100 p-3 w-fit">
-                  <Image className="h-6 w-6 text-red-600" />
-                </div>
-                
-                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-red-600 transition-colors">
-                  JPG to PDF
-                </h3>
-                
-                <p className="text-xs text-gray-400 mb-3">Image to PDF Converter</p>
-                
-                <p className="text-sm text-gray-500 mb-4 flex-1">
-                  Scan tugas tulis tangan atau gabungkan foto KTP & Ijazah jadi satu file PDF. Privasi aman.
-                </p>
-                
-                <div className="flex items-center text-sm font-semibold text-red-600">
-                  Convert Sekarang <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Image Compressor Tool */}
-            <Link href="/tools/image-compressor" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <FileImage className="h-24 w-24 text-orange-600" />
-              </div>
-              
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-orange-100 p-3 w-fit">
-                  <FileImage className="h-6 w-6 text-orange-600" />
-                </div>
-                
-                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
-                  Image Compressor
-                </h3>
-                
-                <p className="text-xs text-gray-400 mb-3">Compress & Optimize Images</p>
-                
-                <p className="text-sm text-gray-500 mb-4 flex-1">
-                  Kecilkan ukuran foto tanpa hilang kualitas. Perfect untuk upload berkas lamaran atau website.
-                </p>
-                
-                <div className="flex items-center text-sm font-semibold text-orange-600">
-                  Compress Sekarang <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* AI Background Remover Tool */}
-            <Link href="/tools/remove-bg" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Eraser className="h-24 w-24 text-pink-600" />
-              </div>
-              
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-pink-100 p-3 w-fit">
-                  <Eraser className="h-6 w-6 text-pink-600" />
-                </div>
-                
-                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-pink-600 transition-colors">
-                  AI Background Remover
-                </h3>
-                
-                <p className="text-xs text-gray-400 mb-3">Remove & Replace Background</p>
-                
-                <p className="text-sm text-gray-500 mb-4 flex-1">
-                  Hapus background foto otomatis & ganti warna Merah/Biru buat pas foto KTP/Wisuda. Gratis & HD.
-                </p>
-                
-                <div className="flex items-center text-sm font-semibold text-pink-600">
-                  Coba Sekarang <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Digital Signature Tool */}
-            <Link href="/tools/signature" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <PenTool className="h-24 w-24 text-blue-600" />
-              </div>
-              
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-blue-100 p-3 w-fit">
-                  <Download className="h-6 w-6 text-blue-600" />
-                </div>
-                
-                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                  Tanda Tangan Digital
-                </h3>
-                
-                <p className="text-xs text-gray-400 mb-3">Digital Signature Maker</p>
-                
-                <p className="text-sm text-gray-500 mb-4 flex-1">
-                  Bikin tanda tangan digital background transparan. Tinggal tempel di Word/PDF tanpa perlu scan.
-                </p>
-                
-                <div className="flex items-center text-sm font-semibold text-blue-600">
-                  Mulai Gambar <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* PDF Merger Tool */}
-            <Link href="/tools/pdf-merger" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Merge className="h-24 w-24 text-purple-600" />
-              </div>
-              
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-purple-100 p-3 w-fit">
-                  <FileText className="h-6 w-6 text-purple-600" />
-                </div>
-                
-                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
-                  PDF Merger
-                </h3>
-                
-                <p className="text-xs text-gray-400 mb-3">Combine PDF Files</p>
-                
-                <p className="text-sm text-gray-500 mb-4 flex-1">
-                  Satukan file Cover, Bab 1-5, dan Lampiran jadi satu file PDF utuh. Urutan bisa diatur.
-                </p>
-                
-                <div className="flex items-center text-sm font-semibold text-purple-600">
-                  Gabungkan File <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Certificate Generator Tool */}
-            <Link href="/tools/certificate" className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm border hover:shadow-md transition-all">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <BadgeCheck className="h-24 w-24 text-yellow-600" />
-              </div>
-              
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="mb-4 inline-flex items-center justify-center rounded-lg bg-yellow-100 p-3 w-fit">
-                  <Users className="h-6 w-6 text-yellow-600" />
-                </div>
-                
-                <h3 className="mb-2 text-xl font-bold text-gray-900 group-hover:text-yellow-600 transition-colors">
-                  E-Certificate Generator
-                </h3>
-                
-                <p className="text-xs text-gray-400 mb-3">Bulk Certificate Maker</p>
-                
-                <p className="text-sm text-gray-500 mb-4 flex-1">
-                  Bikin 500+ sertifikat event otomatis dalam sekali klik. Tinggal upload template & list nama.
-                </p>
-                
-                <div className="flex items-center text-sm font-semibold text-yellow-600">
-                  Buat Sertifikat <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-                </div>
-              </div>
-            </Link>
-          </div>
-
-          <div className="text-center mt-12">
-            {/* <p className="text-sm text-slate-500 mb-4">
-              <strong>Coming Soon:</strong> Resume Builder, LinkedIn Optimizer, Interview Prep
-            </p> */}
-            {!session && (
-              <Link href="/register">
-                <Button variant="outline" size="lg">
-                  Daftar Gratis untuk Akses Semua Tools
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* DISCLAIMER / FOOTER */}
-      
     </div>
   );
 }

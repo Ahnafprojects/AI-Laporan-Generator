@@ -30,8 +30,8 @@ export default function RegisterPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
 
-      toast({ 
-        title: "Registrasi Berhasil! 🎉", 
+      toast({
+        title: "Registrasi Berhasil! 🎉",
         description: "Akun berhasil dibuat. Cek email untuk konfirmasi!"
       });
       router.push("/login");
@@ -43,90 +43,107 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 p-4 py-8">
-      <Card className="w-full max-w-xl shadow-2xl bg-gradient-to-br from-white/90 to-purple-50/50 backdrop-blur-2xl border border-white/40">
-        <CardHeader>
-          <CardTitle className="text-center text-xl">Daftar Akun Baru</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 py-10">
+
+      {/* LIQUID BACKGROUND */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="liquid-blob bg-pink-400 top-20 left-10 opacity-20"></div>
+        <div className="liquid-blob bg-violet-400 bottom-20 right-10 animation-delay-2000 opacity-20"></div>
+      </div>
+
+      <div className="w-full max-w-xl p-4 relative z-10 animate-in fade-in slide-in-from-bottom-5 duration-500">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-block mb-4">
+            <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600">
+              AI Laporan
+            </span>
+          </Link>
+          <h1 className="text-2xl font-bold text-gray-900">Buat Akun Baru 🚀</h1>
+          <p className="text-gray-500 mt-2">Isi data sekali, generate laporan berkali-kali.</p>
+        </div>
+
+        <div className="glass-panel p-8 rounded-2xl relative overflow-hidden">
+          {/* Decorative gradients inside card */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 to-pink-500"></div>
+
           <form onSubmit={onSubmit} className="space-y-5">
-            
+
             {/* BAGIAN 1: AKUN LOGIN */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Email PENS/Pribadi</label>
-                <Input name="email" type="email" required placeholder="nama@it.student.pens.ac.id" />
+                <label className="text-sm font-medium text-gray-700">Email PENS/Pribadi</label>
+                <Input name="email" type="email" required placeholder="nama@it.student.pens.ac.id" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Password</label>
-                <Input name="password" type="password" required placeholder="******" />
+                <label className="text-sm font-medium text-gray-700">Password</label>
+                <Input name="password" type="password" required placeholder="******" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
               </div>
             </div>
 
             {/* BAGIAN 2: DATA MAHASISWA */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Nama Lengkap</label>
-              <Input name="name" required placeholder="Contoh: Muhammad Ahnaf" />
+              <label className="text-sm font-medium text-gray-700">Nama Lengkap</label>
+              <Input name="name" required placeholder="Contoh: Muhammad Ahnaf" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">NRP</label>
-                <Input name="nrp" required placeholder="31246000XX" />
+                <label className="text-sm font-medium text-gray-700">NRP</label>
+                <Input name="nrp" required placeholder="31246000XX" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Kelas</label>
-                <Input name="kelas" required placeholder="2 D4 IT C" />
+                <label className="text-sm font-medium text-gray-700">Kelas</label>
+                <Input name="kelas" required placeholder="2 D4 IT C" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
               </div>
             </div>
 
             {/* BAGIAN 3: DATA INSTITUSI (UNTUK COVER) */}
-            <div className="pt-4 mt-4 border-t border-gray-200">
-              <h3 className="text-sm font-bold mb-3 text-gray-700">Data Institusi (Otomatis Masuk ke Cover)</h3>
-              
+            <div className="pt-4 mt-4 border-t border-gray-200/50">
+              <h3 className="text-xs font-bold mb-3 text-violet-600 uppercase tracking-wider bg-violet-50 inline-block px-2 py-1 rounded">Data Institusi (Auto-Cover)</h3>
+
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-muted-foreground">Program Studi</label>
-                  <Input 
-                    name="prodi" 
-                    defaultValue="PROGRAM STUDI SARJANA TERAPAN TEKNIK INFORMATIKA" 
-                    required 
-                    className="bg-slate-50 uppercase text-xs"
+                  <label className="text-xs font-medium text-gray-500">Program Studi</label>
+                  <Input
+                    name="prodi"
+                    defaultValue="PROGRAM STUDI SARJANA TERAPAN TEKNIK INFORMATIKA"
+                    required
+                    className="bg-gray-50/50 uppercase text-xs border-gray-200"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-muted-foreground">Departemen</label>
-                  <Input 
-                    name="departemen" 
-                    defaultValue="DEPARTEMEN TEKNIK INFORMATIKA DAN KOMPUTER" 
-                    required 
-                    className="bg-slate-50 uppercase text-xs"
+                  <label className="text-xs font-medium text-gray-500">Departemen</label>
+                  <Input
+                    name="departemen"
+                    defaultValue="DEPARTEMEN TEKNIK INFORMATIKA DAN KOMPUTER"
+                    required
+                    className="bg-gray-50/50 uppercase text-xs border-gray-200"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-muted-foreground">Institusi</label>
-                  <Input 
-                    name="institusi" 
-                    defaultValue="POLITEKNIK ELEKTRONIKA NEGERI SURABAYA" 
-                    required 
-                    className="bg-slate-50 uppercase text-xs"
+                  <label className="text-xs font-medium text-gray-500">Institusi</label>
+                  <Input
+                    name="institusi"
+                    defaultValue="POLITEKNIK ELEKTRONIKA NEGERI SURABAYA"
+                    required
+                    className="bg-gray-50/50 uppercase text-xs border-gray-200"
                   />
                 </div>
               </div>
             </div>
 
-            <Button type="submit" className="w-full mt-4" disabled={loading}>
+            <Button type="submit" className="w-full h-12 mt-4 text-base rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-indigo-200 transition-all hover:scale-[1.02]" disabled={loading}>
               {loading ? "Sedang Mendaftar..." : "Daftar Sekarang"}
             </Button>
-            
-            <p className="text-center text-sm pt-2">
-              Sudah punya akun? <Link href="/login" className="text-blue-600 font-bold hover:underline">Login disini</Link>
+
+            <p className="text-center text-sm pt-2 text-gray-600">
+              Sudah punya akun? <Link href="/login" className="text-violet-600 font-bold hover:underline">Login disini</Link>
             </p>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

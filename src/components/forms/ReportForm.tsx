@@ -54,7 +54,7 @@ export default function ReportForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [imageBase64, setImageBase64] = useState<string | null>(null); // State untuk gambar
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const [quota, setQuota] = useState<{used: number, remaining: number, maxDaily: number, canGenerate: boolean} | null>(null);
+  const [quota, setQuota] = useState<{ used: number, remaining: number, maxDaily: number, canGenerate: boolean } | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -70,11 +70,11 @@ export default function ReportForm() {
   // Cycling loading messages setiap 2 detik
   useEffect(() => {
     if (!isLoading) return;
-    
+
     const interval = setInterval(() => {
       setCurrentMessageIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
     }, 2000);
-    
+
     return () => clearInterval(interval);
   }, [isLoading]);
 
@@ -91,7 +91,7 @@ export default function ReportForm() {
         console.error('Failed to fetch quota:', error);
       }
     };
-    
+
     fetchQuota();
   }, []);
 
@@ -109,10 +109,10 @@ export default function ReportForm() {
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     if (quota && !quota.canGenerate) {
-      toast({ 
-        variant: "destructive", 
-        title: "Kuota Habis!", 
-        description: `Anda sudah mencapai batas maksimal ${quota.maxDaily} laporan per hari. ${quota.maxDaily === 3 ? 'Upgrade ke PRO untuk 50 laporan/hari atau c' : 'C'}oba lagi besok.` 
+      toast({
+        variant: "destructive",
+        title: "Kuota Habis!",
+        description: `Anda sudah mencapai batas maksimal ${quota.maxDaily} laporan per hari. ${quota.maxDaily === 3 ? 'Upgrade ke PRO untuk 50 laporan/hari atau c' : 'C'}oba lagi besok.`
       });
       return;
     }
@@ -145,211 +145,219 @@ export default function ReportForm() {
 
   return (
     <>
-      <Card className="w-full max-w-3xl mx-auto shadow-lg">
-        <CardHeader>
+      <div className="w-full max-w-3xl mx-auto backdrop-blur-xl bg-white/70 dark:bg-black/50 border border-white/20 shadow-2xl rounded-2xl overflow-hidden relative group">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-violet-500 to-purple-500"></div>
+        <CardHeader className="bg-white/40 dark:bg-black/20 border-b border-white/20 pb-6">
           <div className="flex items-center justify-between">
-            <CardTitle>Buat Laporan Baru</CardTitle>
+            <div>
+              <CardTitle className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600">Buat Laporan Baru 🚀</CardTitle>
+              <p className="text-gray-500 text-sm mt-1">Isi data di bawah dan biarkan AI bekerja.</p>
+            </div>
             {quota && (
-              <div className={`text-sm px-3 py-1 rounded-full ${
-                quota.remaining > 0 
-                  ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
-                  : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
-              }`}>
-                Kuota: {quota.remaining}/{quota.maxDaily} tersisa
+              <div className={`text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 border shadow-sm ${quota.remaining > 0
+                ? 'bg-green-100/80 text-green-700 border-green-200'
+                : 'bg-red-100/80 text-red-700 border-red-200'
+                }`}>
+                <Zap className={`h-3 w-3 ${quota.remaining > 0 ? "fill-green-700" : "fill-red-700"}`} />
+                Kuota: {quota.remaining}/{quota.maxDaily}
               </div>
             )}
           </div>
           {quota && quota.remaining === 0 && (
-            <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 p-3 rounded-lg">
-              <p className="text-sm text-amber-800 dark:text-amber-200">
-                Kuota harian Anda sudah habis. Silakan coba lagi besok atau gunakan laporan yang sudah ada di riwayat.
-              </p>
+            <div className="mt-4 bg-amber-50/80 backdrop-blur-md border border-amber-200 p-4 rounded-xl flex items-start gap-3">
+              <span className="text-2xl">⚠️</span>
+              <div>
+                <h4 className="font-bold text-amber-800 text-sm">Kuota Harian Habis</h4>
+                <p className="text-xs text-amber-700 mt-1">
+                  Upgrade ke PRO untuk kuota 50 laporan/hari atau Kembali besok.
+                </p>
+              </div>
             </div>
           )}
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              
+
               {/* INPUT METADATA PRAKTIKUM */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Judul Praktikum</FormLabel>
-                    <FormControl><Input placeholder="Contoh: Modul 1 - Inheritance" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="subject"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mata Kuliah</FormLabel>
-                    <FormControl><Input placeholder="PBO" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lecturer"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Dosen Pengampu</FormLabel>
-                    <FormControl><Input placeholder="Nama Dosen" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="practiceDate"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col pt-2">
-                    <FormLabel>Tanggal Praktikum</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                            {field.value ? format(field.value, "PPP") : <span>Pilih tanggal</span>}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date() || date < new Date("1900-01-01")} initialFocus />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Judul Praktikum</FormLabel>
+                      <FormControl><Input placeholder="Contoh: Modul 1 - Inheritance" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="subject"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mata Kuliah</FormLabel>
+                      <FormControl><Input placeholder="PBO" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lecturer"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Dosen Pengampu</FormLabel>
+                      <FormControl><Input placeholder="Nama Dosen" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="practiceDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col pt-2">
+                      <FormLabel>Tanggal Praktikum</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
+                              {field.value ? format(field.value, "PPP") : <span>Pilih tanggal</span>}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date() || date < new Date("1900-01-01")} initialFocus />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            {/* INPUT KONTEN UTAMA */}
-            <div className="space-y-4 pt-4 border-t">
-              <FormField
-                control={form.control}
-                name="labSheet"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>1. Soal / Modul (Wajib)</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Paste teks soal di sini..." className="min-h-[150px]" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* INPUT KONTEN UTAMA */}
+              <div className="space-y-4 pt-4 border-t">
+                <FormField
+                  control={form.control}
+                  name="labSheet"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>1. Soal / Modul (Wajib)</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Paste teks soal di sini..." className="min-h-[150px]" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">2. Foto Soal (Opsional)</label>
-                <div className="flex items-center gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">2. Foto Soal (Opsional)</label>
+                  <div className="flex items-center gap-4">
                     <Input type="file" accept="image/*" onChange={handleImageUpload} />
                     {imageBase64 && <span className="text-xs text-green-600">Foto terupload!</span>}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">Jika soal ada diagram/gambar, upload di sini agar AI bisa lihat.</p>
                 </div>
-                <p className="text-[10px] text-muted-foreground">Jika soal ada diagram/gambar, upload di sini agar AI bisa lihat.</p>
+
+                <FormField
+                  control={form.control}
+                  name="codeContent"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>3. Kode Program (Opsional)</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Paste kodingan jawabanmu (jika ada)..." className="font-mono text-xs min-h-[150px]" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              <FormField
-                control={form.control}
-                name="codeContent"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>3. Kode Program (Opsional)</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Paste kodingan jawabanmu (jika ada)..." className="font-mono text-xs min-h-[150px]" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading || (quota ? !quota.canGenerate : false)}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sedang generate...
+                  </>
+                ) : quota && !quota.canGenerate ? (
+                  "Kuota Harian Habis"
+                ) : (
+                  "Generate Laporan"
                 )}
-              />
-            </div>
-
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading || (quota ? !quota.canGenerate : false)}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
-                  Sedang generate...
-                </>
-              ) : quota && !quota.canGenerate ? (
-                "Kuota Harian Habis"
-              ) : (
-                "Generate Laporan"
-              )}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
-
-    {/* Loading Overlay dengan Fun Facts */}
-    {isLoading && (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6">
-            <div className="flex flex-col items-center text-center space-y-4">
-              {/* Animated Loading Spinner */}
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Zap className="h-6 w-6 text-blue-600" />
-                </div>
-              </div>
-              
-              {/* Progress Text */}
-              <div className="space-y-2">
-                <h3 className="font-bold text-lg">Sedang Generate Laporan...</h3>
-                <p className="text-sm text-muted-foreground">AI sedang menganalisis kode dan membuat laporan praktikum</p>
-              </div>
-              
-              {/* Fun Facts / Motivasi */}
-              <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border-l-4 border-l-blue-500">
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl flex-shrink-0">
-                    {LOADING_MESSAGES[currentMessageIndex].icon === "💡" && <Lightbulb className="h-6 w-6 text-yellow-500" />}
-                    {LOADING_MESSAGES[currentMessageIndex].icon === "☕" && <Coffee className="h-6 w-6 text-amber-600" />}
-                    {LOADING_MESSAGES[currentMessageIndex].icon === "⚡" && <Zap className="h-6 w-6 text-blue-500" />}
-                    {!['💡', '☕', '⚡'].includes(LOADING_MESSAGES[currentMessageIndex].icon) && 
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
-                        {LOADING_MESSAGES[currentMessageIndex].icon.replace(/\p{Emoji}/gu, '?')}
-                      </div>
-                    }
-                  </span>
-                  <p className="text-sm leading-relaxed">
-                    {LOADING_MESSAGES[currentMessageIndex].text}
-                  </p>
-                </div>
-              </div>
-              
-              {/* Progress Dots */}
-              <div className="flex space-x-1">
-                {[...Array(3)].map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-2 h-2 rounded-full bg-blue-500 animate-pulse`}
-                    style={{ animationDelay: `${i * 0.2}s` }}
-                  />
-                ))}
-              </div>
-              
-              <p className="text-xs text-muted-foreground mt-4">
-                Biasanya memakan waktu 5-10 detik
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
       </div>
-    )}
-  </>
+
+      {/* Loading Overlay dengan Fun Facts */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <CardContent className="p-6">
+              <div className="flex flex-col items-center text-center space-y-4">
+                {/* Animated Loading Spinner */}
+                <div className="relative">
+                  <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Zap className="h-6 w-6 text-blue-600" />
+                  </div>
+                </div>
+
+                {/* Progress Text */}
+                <div className="space-y-2">
+                  <h3 className="font-bold text-lg">Sedang Generate Laporan...</h3>
+                  <p className="text-sm text-muted-foreground">AI sedang menganalisis kode dan membuat laporan praktikum</p>
+                </div>
+
+                {/* Fun Facts / Motivasi */}
+                <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border-l-4 border-l-blue-500">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl flex-shrink-0">
+                      {LOADING_MESSAGES[currentMessageIndex].icon === "💡" && <Lightbulb className="h-6 w-6 text-yellow-500" />}
+                      {LOADING_MESSAGES[currentMessageIndex].icon === "☕" && <Coffee className="h-6 w-6 text-amber-600" />}
+                      {LOADING_MESSAGES[currentMessageIndex].icon === "⚡" && <Zap className="h-6 w-6 text-blue-500" />}
+                      {!['💡', '☕', '⚡'].includes(LOADING_MESSAGES[currentMessageIndex].icon) &&
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
+                          {LOADING_MESSAGES[currentMessageIndex].icon.replace(/\p{Emoji}/gu, '?')}
+                        </div>
+                      }
+                    </span>
+                    <p className="text-sm leading-relaxed">
+                      {LOADING_MESSAGES[currentMessageIndex].text}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Progress Dots */}
+                <div className="flex space-x-1">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-2 rounded-full bg-blue-500 animate-pulse`}
+                      style={{ animationDelay: `${i * 0.2}s` }}
+                    />
+                  ))}
+                </div>
+
+                <p className="text-xs text-muted-foreground mt-4">
+                  Biasanya memakan waktu 5-10 detik
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </>
   );
 }

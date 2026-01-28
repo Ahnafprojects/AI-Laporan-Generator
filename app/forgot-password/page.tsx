@@ -28,9 +28,9 @@ export default function ForgotPasswordPage() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
 
-      toast({ 
-        title: "Email Terkirim! 📧", 
-        description: "Silakan cek email Anda untuk link reset password." 
+      toast({
+        title: "Email Terkirim! 📧",
+        description: "Silakan cek email Anda untuk link reset password."
       });
       setEmailSent(true);
     } catch (err: any) {
@@ -63,38 +63,45 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-center">Lupa Password</CardTitle>
-          <p className="text-center text-sm text-muted-foreground">
-            Masukkan email Anda untuk mendapatkan link reset password
-          </p>
-        </CardHeader>
-        <CardContent>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-50 py-10">
+      {/* LIQUID BACKGROUND */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="liquid-blob bg-cyan-400 top-20 right-20 opacity-20"></div>
+        <div className="liquid-blob bg-blue-400 bottom-10 left-10 animation-delay-2000 opacity-20"></div>
+      </div>
+
+      <div className="w-full max-w-md p-4 relative z-10 animate-in fade-in zoom-in duration-500">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">Lupa Password? 🔑</h1>
+          <p className="text-gray-500 mt-2">Jangan panik, kami bantu reset passwordmu.</p>
+        </div>
+
+        <div className="glass-panel p-8 rounded-2xl">
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Input 
-                name="email" 
-                type="email" 
-                placeholder="Masukkan email Anda" 
+              <label className="text-sm font-medium text-gray-700">Email Terdaftar</label>
+              <Input
+                name="email"
+                type="email"
+                placeholder="Masukkan email Anda"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required 
+                required
+                className="bg-white/50 border-gray-200 focus:bg-white transition-all h-12"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full h-12 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg shadow-indigo-200 transition-all hover:scale-[1.02]" disabled={loading}>
               {loading ? "Mengirim..." : "Kirim Link Reset Password"}
             </Button>
           </form>
-          
-          <div className="text-center mt-4">
-            <Link href="/login" className="text-sm text-blue-600 hover:underline inline-flex items-center">
-              <ArrowLeft className="mr-1 h-3 w-3" /> Kembali ke Login
+
+          <div className="text-center mt-6">
+            <Link href="/login" className="text-sm text-gray-500 hover:text-violet-600 inline-flex items-center font-medium transition-colors">
+              <ArrowLeft className="mr-2 h-4 w-4" /> Kembali ke Login
             </Link>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

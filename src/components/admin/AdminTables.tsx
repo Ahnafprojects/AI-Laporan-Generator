@@ -32,15 +32,15 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
   const [upgradingId, setUpgradingId] = useState<string | null>(null);
   const [dbStats, setDbStats] = useState<any>(null);
   const [loadingStats, setLoadingStats] = useState(false);
-  
+
   // States untuk search
   const [userSearchTerm, setUserSearchTerm] = useState("");
   const [reportSearchTerm, setReportSearchTerm] = useState("");
   const [feedbackSearchTerm, setFeedbackSearchTerm] = useState("");
-  
+
   // States untuk filter PRO users
   const [userFilter, setUserFilter] = useState<"all" | "pro" | "free" | "expired">("all");
-  
+
   // States untuk pagination
   const [userCurrentPage, setUserCurrentPage] = useState(1);
   const [reportCurrentPage, setReportCurrentPage] = useState(1);
@@ -77,7 +77,7 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
         body: JSON.stringify({ id: userId }),
       });
       if (!res.ok) throw new Error("Gagal");
-      
+
       // Update UI langsung tanpa refresh
       setUsers(users.filter(u => u.id !== userId));
       toast({ title: "User Dihapus", description: "User dan laporannya telah dihapus permanen." });
@@ -94,7 +94,7 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
     try {
       let endpoint = "";
       let body = {};
-      
+
       if (newStatus === 'free') {
         // Downgrade ke FREE
         endpoint = "/api/admin/downgrade-user";
@@ -102,49 +102,49 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
       } else {
         // Upgrade ke PRO
         endpoint = "/api/payment/manual-activate";
-        body = { 
-          email: userEmail, 
+        body = {
+          email: userEmail,
           paymentId: `admin-${newStatus}-${Date.now()}`,
           plan: newStatus
         };
       }
-      
+
       const res = await fetch(endpoint, {
-        method: "POST", 
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      
+
       if (!res.ok) throw new Error("Gagal update status");
-      
+
       const result = await res.json();
-      
+
       // Update user di state
-      setUsers(users.map(u => 
-        u.id === userId 
-          ? { 
-              ...u, 
-              isPro: newStatus !== 'free', 
-              proExpiresAt: newStatus === 'free' ? null : result.expiresAt 
-            }
+      setUsers(users.map(u =>
+        u.id === userId
+          ? {
+            ...u,
+            isPro: newStatus !== 'free',
+            proExpiresAt: newStatus === 'free' ? null : result.expiresAt
+          }
           : u
       ));
-      
+
       const statusText = {
         'free': 'FREE',
         'monthly': 'PRO Monthly (30 hari)',
         'yearly': 'PRO Yearly (365 hari)'
       };
-      
-      toast({ 
-        title: "Status Diupdate!", 
-        description: `User berhasil diubah ke ${statusText[newStatus]}` 
+
+      toast({
+        title: "Status Diupdate!",
+        description: `User berhasil diubah ke ${statusText[newStatus]}`
       });
     } catch (err) {
-      toast({ 
-        variant: "destructive", 
-        title: "Error", 
-        description: "Gagal mengubah status user." 
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Gagal mengubah status user."
       });
     } finally {
       setUpgradingId(null);
@@ -160,7 +160,7 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
         body: JSON.stringify({ id: reportId }),
       });
       if (!res.ok) throw new Error("Gagal");
-      
+
       setReports(reports.filter(r => r.id !== reportId));
       toast({ title: "Laporan Dihapus", description: "Laporan berhasil dihapus." });
     } catch (err) {
@@ -288,510 +288,512 @@ export default function AdminTables({ initialUsers, initialReports, initialFeedb
   };
 
   return (
-    <Tabs defaultValue="users" className="space-y-4">
-      <TabsList>
-        <TabsTrigger value="users">Daftar User ({filteredUsers.length})</TabsTrigger>
-        <TabsTrigger value="reports">Daftar Laporan ({filteredReports.length})</TabsTrigger>
-        <TabsTrigger value="feedbacks">Masukan ({filteredFeedbacks.length})</TabsTrigger>
-        <TabsTrigger value="database">Database Usage</TabsTrigger>
-      </TabsList>
+    <Tabs defaultValue="users" className="space-y-6">
+      <div className="backdrop-blur-xl bg-white/40 border border-white/20 p-1.5 rounded-2xl inline-flex w-full md:w-auto shadow-sm">
+        <TabsList className="bg-transparent h-auto p-0 gap-2 w-full flex-wrap justify-start">
+          <TabsTrigger value="users" className="rounded-xl px-4 py-2.5 data-[state=active]:bg-white data-[state=active]:text-violet-600 data-[state=active]:shadow-md transition-all font-medium">Daftar User ({filteredUsers.length})</TabsTrigger>
+          <TabsTrigger value="reports" className="rounded-xl px-4 py-2.5 data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-md transition-all font-medium">Daftar Laporan ({filteredReports.length})</TabsTrigger>
+          <TabsTrigger value="feedbacks" className="rounded-xl px-4 py-2.5 data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-md transition-all font-medium">Masukan ({filteredFeedbacks.length})</TabsTrigger>
+          <TabsTrigger value="database" className="rounded-xl px-4 py-2.5 data-[state=active]:bg-white data-[state=active]:text-amber-600 data-[state=active]:shadow-md transition-all font-medium">Database Usage</TabsTrigger>
+        </TabsList>
+      </div>
 
       {/* TAB MANAGE USER */}
       <TabsContent value="users">
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>Manajemen Pengguna</CardTitle>
-              <div className="flex items-center space-x-3">
-                {/* Filter PRO Status */}
-                <div className="flex items-center space-x-2">
-                  <Filter className="h-4 w-4 text-gray-400" />
-                  <Select value={userFilter} onValueChange={handleUserFilter}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Semua</SelectItem>
-                      <SelectItem value="pro">PRO Active</SelectItem>
-                      <SelectItem value="expired">PRO Expired</SelectItem>
-                      <SelectItem value="free">Free User</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                {/* Search */}
-                <div className="flex items-center space-x-2">
-                  <Search className="h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Cari nama, NRP, email, atau kelas..."
-                    value={userSearchTerm}
-                    onChange={(e) => handleUserSearch(e.target.value)}
-                    className="w-64"
-                  />
-                </div>
+        <div className="glass-panel p-6 rounded-3xl overflow-hidden border border-white/20 shadow-xl">
+          <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Manajemen Pengguna</h2>
+              <p className="text-sm text-gray-500">Kelola akses dan status membership user.</p>
+            </div>
+            <div className="flex items-center space-x-3">
+              {/* Filter PRO Status */}
+              <div className="flex items-center space-x-2">
+                <Filter className="h-4 w-4 text-gray-400" />
+                <Select value={userFilter} onValueChange={handleUserFilter}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua</SelectItem>
+                    <SelectItem value="pro">PRO Active</SelectItem>
+                    <SelectItem value="expired">PRO Expired</SelectItem>
+                    <SelectItem value="free">Free User</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Search */}
+              <div className="flex items-center space-x-2">
+                <Search className="h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Cari nama, NRP, email, atau kelas..."
+                  value={userSearchTerm}
+                  onChange={(e) => handleUserSearch(e.target.value)}
+                  className="w-64"
+                />
               </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nama</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Kelas</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Usage AI</TableHead>
-                    <TableHead>Terdaftar</TableHead>
-                    <TableHead className="text-right">Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedUsers.length > 0 ? (
-                    paginatedUsers.map((user) => {
-                      const now = new Date();
-                      const isActivePro = user.proExpiresAt && new Date(user.proExpiresAt) > now;
-                      const isExpiredPro = user.proExpiresAt && new Date(user.proExpiresAt) <= now && !user.isPro;
-                      
-                      return (
-                        <TableRow key={user.id}>
-                          <TableCell className="font-medium">
-                            {user.name}
-                            <div className="text-xs text-muted-foreground">{user.nrp}</div>
-                          </TableCell>
-                          <TableCell>{user.email}</TableCell>
-                          <TableCell>{user.kelas}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1">
-                              {isActivePro ? (
-                                <>
-                                  <Crown className="h-4 w-4 text-yellow-600" />
-                                  <span className="text-yellow-600 font-semibold text-sm">PRO</span>
-                                  <div className="text-xs text-muted-foreground">
-                                    Exp: {format(new Date(user.proExpiresAt), "dd/MM/yy", { locale: idLocale })}
-                                  </div>
-                                </>
-                              ) : isExpiredPro ? (
-                                <>
-                                  <Crown className="h-4 w-4 text-gray-400" />
-                                  <span className="text-red-600 font-semibold text-sm">EXPIRED</span>
-                                  <div className="text-xs text-muted-foreground">
-                                    {format(new Date(user.proExpiresAt), "dd/MM/yy", { locale: idLocale })}
-                                  </div>
-                                </>
-                              ) : (
-                                <span className="text-gray-600 text-sm">FREE</span>
-                              )}
+          </div>
+
+          <div className="space-y-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nama</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Kelas</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Usage AI</TableHead>
+                  <TableHead>Terdaftar</TableHead>
+                  <TableHead className="text-right">Aksi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedUsers.length > 0 ? (
+                  paginatedUsers.map((user) => {
+                    const now = new Date();
+                    const isActivePro = user.proExpiresAt && new Date(user.proExpiresAt) > now;
+                    const isExpiredPro = user.proExpiresAt && new Date(user.proExpiresAt) <= now && !user.isPro;
+
+                    return (
+                      <TableRow key={user.id}>
+                        <TableCell className="font-medium">
+                          {user.name}
+                          <div className="text-xs text-muted-foreground">{user.nrp}</div>
+                        </TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.kelas}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            {isActivePro ? (
+                              <>
+                                <Crown className="h-4 w-4 text-yellow-600" />
+                                <span className="text-yellow-600 font-semibold text-sm">PRO</span>
+                                <div className="text-xs text-muted-foreground">
+                                  Exp: {format(new Date(user.proExpiresAt), "dd/MM/yy", { locale: idLocale })}
+                                </div>
+                              </>
+                            ) : isExpiredPro ? (
+                              <>
+                                <Crown className="h-4 w-4 text-gray-400" />
+                                <span className="text-red-600 font-semibold text-sm">EXPIRED</span>
+                                <div className="text-xs text-muted-foreground">
+                                  {format(new Date(user.proExpiresAt), "dd/MM/yy", { locale: idLocale })}
+                                </div>
+                              </>
+                            ) : (
+                              <span className="text-gray-600 text-sm">FREE</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm">
+                            <div>{user._count.reports} Laporan</div>
+                            <div className="text-xs text-muted-foreground">
+                              Daily: {user.dailyUsage || 0}/50
                             </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="text-sm">
-                              <div>{user._count.reports} Laporan</div>
-                              <div className="text-xs text-muted-foreground">
-                                Daily: {user.dailyUsage || 0}/50
-                              </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm">
+                            <div>{format(new Date(user.createdAt), "dd/MM/yy", { locale: idLocale })}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {format(new Date(user.createdAt), "HH:mm", { locale: idLocale })}
                             </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="text-sm">
-                              <div>{format(new Date(user.createdAt), "dd/MM/yy", { locale: idLocale })}</div>
-                              <div className="text-xs text-muted-foreground">
-                                {format(new Date(user.createdAt), "HH:mm", { locale: idLocale })}
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex gap-1 justify-end">
-                              {/* STATUS MANAGEMENT BUTTONS */}
-                              {isActivePro ? (
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  onClick={() => handleUpdateUserStatus(user.id, user.email, 'free')}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex gap-1 justify-end">
+                            {/* STATUS MANAGEMENT BUTTONS */}
+                            {isActivePro ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleUpdateUserStatus(user.id, user.email, 'free')}
+                                disabled={upgradingId === user.id}
+                                className="text-xs px-2 h-7"
+                              >
+                                {upgradingId === user.id ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  "→ FREE"
+                                )}
+                              </Button>
+                            ) : (
+                              <>
+                                <Button
+                                  variant="default"
+                                  size="sm"
+                                  onClick={() => handleUpdateUserStatus(user.id, user.email, 'monthly')}
                                   disabled={upgradingId === user.id}
-                                  className="text-xs px-2 h-7"
+                                  className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 h-7"
                                 >
                                   {upgradingId === user.id ? (
                                     <Loader2 className="h-3 w-3 animate-spin" />
                                   ) : (
-                                    "→ FREE"
+                                    "PRO 30d"
                                   )}
                                 </Button>
-                              ) : (
-                                <>
-                                  <Button 
-                                    variant="default" 
-                                    size="sm" 
-                                    onClick={() => handleUpdateUserStatus(user.id, user.email, 'monthly')}
-                                    disabled={upgradingId === user.id}
-                                    className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 h-7"
-                                  >
-                                    {upgradingId === user.id ? (
-                                      <Loader2 className="h-3 w-3 animate-spin" />
-                                    ) : (
-                                      "PRO 30d"
-                                    )}
-                                  </Button>
-                                  <Button 
-                                    variant="default" 
-                                    size="sm" 
-                                    onClick={() => handleUpdateUserStatus(user.id, user.email, 'yearly')}
-                                    disabled={upgradingId === user.id}
-                                    className="bg-yellow-500 hover:bg-yellow-600 text-black text-xs px-2 h-7"
-                                  >
-                                    {upgradingId === user.id ? (
-                                      <Loader2 className="h-3 w-3 animate-spin" />
-                                    ) : (
-                                      "PRO 1y"
-                                    )}
-                                  </Button>
-                                </>
-                              )}
-                              
-                              {/* ALERT DIALOG BIAR GA SALAH HAPUS */}
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button variant="destructive" size="sm" disabled={deletingId === user.id}>
-                                    {deletingId === user.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserX className="h-4 w-4" />}
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Hapus User {user.name}?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Ini akan menghapus akun user DAN SEMUA LAPORAN yang pernah dia buat secara permanen. Tindakan tidak bisa dibatalkan.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Batal</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteUser(user.id)} className="bg-red-600 hover:bg-red-700">
-                                      Ya, Musnahkan
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </div>
+                                <Button
+                                  variant="default"
+                                  size="sm"
+                                  onClick={() => handleUpdateUserStatus(user.id, user.email, 'yearly')}
+                                  disabled={upgradingId === user.id}
+                                  className="bg-yellow-500 hover:bg-yellow-600 text-black text-xs px-2 h-7"
+                                >
+                                  {upgradingId === user.id ? (
+                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                  ) : (
+                                    "PRO 1y"
+                                  )}
+                                </Button>
+                              </>
+                            )}
+
+                            {/* ALERT DIALOG BIAR GA SALAH HAPUS */}
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="destructive" size="sm" disabled={deletingId === user.id}>
+                                  {deletingId === user.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserX className="h-4 w-4" />}
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Hapus User {user.name}?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Ini akan menghapus akun user DAN SEMUA LAPORAN yang pernah dia buat secara permanen. Tindakan tidak bisa dibatalkan.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Batal</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDeleteUser(user.id)} className="bg-red-600 hover:bg-red-700">
+                                    Ya, Musnahkan
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
-                    })
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                        {userSearchTerm ? "Tidak ada pengguna yang cocok dengan pencarian." : "Tidak ada pengguna."}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                      {userSearchTerm ? "Tidak ada pengguna yang cocok dengan pencarian." : "Tidak ada pengguna."}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
 
-              {/* PAGINATION USERS */}
-              {userTotalPages > 1 && (
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
-                    Menampilkan {((userCurrentPage - 1) * itemsPerPage) + 1} - {Math.min(userCurrentPage * itemsPerPage, filteredUsers.length)} dari {filteredUsers.length} pengguna
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleUserPageChange(userCurrentPage - 1)}
-                      disabled={userCurrentPage === 1}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Sebelumnya
-                    </Button>
-                    <div className="flex items-center space-x-1">
-                      {Array.from({ length: Math.min(5, userTotalPages) }, (_, i) => {
-                        const pageNum = i + 1;
-                        return (
-                          <Button
-                            key={pageNum}
-                            variant={userCurrentPage === pageNum ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleUserPageChange(pageNum)}
-                            className="w-8 h-8"
-                          >
-                            {pageNum}
-                          </Button>
-                        );
-                      })}
-                      {userTotalPages > 5 && (
-                        <>
-                          <span className="text-muted-foreground">...</span>
-                          <Button
-                            variant={userCurrentPage === userTotalPages ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleUserPageChange(userTotalPages)}
-                            className="w-8 h-8"
-                          >
-                            {userTotalPages}
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleUserPageChange(userCurrentPage + 1)}
-                      disabled={userCurrentPage === userTotalPages}
-                    >
-                      Selanjutnya
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
+            {/* PAGINATION USERS */}
+            {userTotalPages > 1 && (
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">
+                  Menampilkan {((userCurrentPage - 1) * itemsPerPage) + 1} - {Math.min(userCurrentPage * itemsPerPage, filteredUsers.length)} dari {filteredUsers.length} pengguna
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleUserPageChange(userCurrentPage - 1)}
+                    disabled={userCurrentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Sebelumnya
+                  </Button>
+                  <div className="flex items-center space-x-1">
+                    {Array.from({ length: Math.min(5, userTotalPages) }, (_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={userCurrentPage === pageNum ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleUserPageChange(pageNum)}
+                          className="w-8 h-8"
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                    {userTotalPages > 5 && (
+                      <>
+                        <span className="text-muted-foreground">...</span>
+                        <Button
+                          variant={userCurrentPage === userTotalPages ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleUserPageChange(userTotalPages)}
+                          className="w-8 h-8"
+                        >
+                          {userTotalPages}
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleUserPageChange(userCurrentPage + 1)}
+                    disabled={userCurrentPage === userTotalPages}
+                  >
+                    Selanjutnya
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </TabsContent>
 
       {/* TAB MANAGE REPORTS */}
       <TabsContent value="reports">
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>Laporan Terbaru</CardTitle>
-              <div className="flex items-center space-x-2 max-w-sm">
-                <Search className="h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Cari judul, mata kuliah, atau mahasiswa..."
-                  value={reportSearchTerm}
-                  onChange={(e) => handleReportSearch(e.target.value)}
-                  className="w-64"
-                />
-              </div>
+        <div className="glass-panel p-6 rounded-3xl overflow-hidden border border-white/20 shadow-xl">
+          <div className="mb-6 flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Laporan Terbaru</h2>
+              <p className="text-sm text-gray-500">Pantau aktivitas generate laporan.</p>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Judul Praktikum</TableHead>
-                    <TableHead>Mahasiswa</TableHead>
-                    <TableHead>Tanggal</TableHead>
-                    <TableHead className="text-right">Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedReports.length > 0 ? (
-                    paginatedReports.map((report) => (
-                      <TableRow key={report.id}>
-                        <TableCell className="font-medium">
-                          {report.title}
-                          <div className="text-xs text-muted-foreground">{report.subject}</div>
-                        </TableCell>
-                        <TableCell>
-                          {report.user.name}
-                          <div className="text-xs text-muted-foreground">{report.user.nrp}</div>
-                        </TableCell>
-                        <TableCell>{format(new Date(report.createdAt), "dd MMM yyyy", { locale: idLocale })}</TableCell>
-                        <TableCell className="text-right">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleDeleteReport(report.id)}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                            disabled={deletingId === report.id}
-                          >
-                             {deletingId === report.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                        {reportSearchTerm ? "Tidak ada laporan yang cocok dengan pencarian." : "Tidak ada laporan."}
+            <div className="flex items-center space-x-2 max-w-sm">
+              <Search className="h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Cari judul, mata kuliah, atau mahasiswa..."
+                value={reportSearchTerm}
+                onChange={(e) => handleReportSearch(e.target.value)}
+                className="w-64"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Judul Praktikum</TableHead>
+                  <TableHead>Mahasiswa</TableHead>
+                  <TableHead>Tanggal</TableHead>
+                  <TableHead className="text-right">Aksi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedReports.length > 0 ? (
+                  paginatedReports.map((report) => (
+                    <TableRow key={report.id}>
+                      <TableCell className="font-medium">
+                        {report.title}
+                        <div className="text-xs text-muted-foreground">{report.subject}</div>
+                      </TableCell>
+                      <TableCell>
+                        {report.user.name}
+                        <div className="text-xs text-muted-foreground">{report.user.nrp}</div>
+                      </TableCell>
+                      <TableCell>{format(new Date(report.createdAt), "dd MMM yyyy", { locale: idLocale })}</TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteReport(report.id)}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          disabled={deletingId === report.id}
+                        >
+                          {deletingId === report.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                        </Button>
                       </TableCell>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                      {reportSearchTerm ? "Tidak ada laporan yang cocok dengan pencarian." : "Tidak ada laporan."}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
 
-              {/* PAGINATION REPORTS */}
-              {reportTotalPages > 1 && (
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
-                    Menampilkan {((reportCurrentPage - 1) * itemsPerPage) + 1} - {Math.min(reportCurrentPage * itemsPerPage, filteredReports.length)} dari {filteredReports.length} laporan
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleReportPageChange(reportCurrentPage - 1)}
-                      disabled={reportCurrentPage === 1}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Sebelumnya
-                    </Button>
-                    <div className="flex items-center space-x-1">
-                      {Array.from({ length: Math.min(5, reportTotalPages) }, (_, i) => {
-                        const pageNum = i + 1;
-                        return (
-                          <Button
-                            key={pageNum}
-                            variant={reportCurrentPage === pageNum ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleReportPageChange(pageNum)}
-                            className="w-8 h-8"
-                          >
-                            {pageNum}
-                          </Button>
-                        );
-                      })}
-                      {reportTotalPages > 5 && (
-                        <>
-                          <span className="text-muted-foreground">...</span>
-                          <Button
-                            variant={reportCurrentPage === reportTotalPages ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleReportPageChange(reportTotalPages)}
-                            className="w-8 h-8"
-                          >
-                            {reportTotalPages}
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleReportPageChange(reportCurrentPage + 1)}
-                      disabled={reportCurrentPage === reportTotalPages}
-                    >
-                      Selanjutnya
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
+            {/* PAGINATION REPORTS */}
+            {reportTotalPages > 1 && (
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">
+                  Menampilkan {((reportCurrentPage - 1) * itemsPerPage) + 1} - {Math.min(reportCurrentPage * itemsPerPage, filteredReports.length)} dari {filteredReports.length} laporan
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleReportPageChange(reportCurrentPage - 1)}
+                    disabled={reportCurrentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Sebelumnya
+                  </Button>
+                  <div className="flex items-center space-x-1">
+                    {Array.from({ length: Math.min(5, reportTotalPages) }, (_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={reportCurrentPage === pageNum ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleReportPageChange(pageNum)}
+                          className="w-8 h-8"
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                    {reportTotalPages > 5 && (
+                      <>
+                        <span className="text-muted-foreground">...</span>
+                        <Button
+                          variant={reportCurrentPage === reportTotalPages ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleReportPageChange(reportTotalPages)}
+                          className="w-8 h-8"
+                        >
+                          {reportTotalPages}
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleReportPageChange(reportCurrentPage + 1)}
+                    disabled={reportCurrentPage === reportTotalPages}
+                  >
+                    Selanjutnya
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </TabsContent>
 
       {/* TAB MANAGE FEEDBACKS */}
       <TabsContent value="feedbacks">
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>Masukan & Laporan Bug</CardTitle>
-              <div className="flex items-center space-x-2 max-w-sm">
-                <Search className="h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Cari pesan atau email..."
-                  value={feedbackSearchTerm}
-                  onChange={(e) => handleFeedbackSearch(e.target.value)}
-                  className="w-64"
-                />
-              </div>
+        <div className="glass-panel p-6 rounded-3xl overflow-hidden border border-white/20 shadow-xl">
+          <div className="mb-6 flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Masukan & Bug</h2>
+              <p className="text-sm text-gray-500">Apa kata pengguna tentang aplikasimu.</p>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px]">Rating</TableHead>
-                    <TableHead>Pesan</TableHead>
-                    <TableHead>User (Opsional)</TableHead>
-                    <TableHead>Tanggal</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedFeedbacks.length > 0 ? (
-                    paginatedFeedbacks.map((fb) => (
-                      <TableRow key={fb.id}>
-                        <TableCell>
-                          <div className="flex text-yellow-500">
-                            {/* Render Bintang */}
-                            {Array.from({ length: fb.rating }).map((_, i) => (
-                              <Star key={i} className="h-4 w-4 fill-current" />
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell className="max-w-md truncate" title={fb.message}>
-                          {fb.message}
-                        </TableCell>
-                        <TableCell>
-                          {fb.email ? <span className="text-green-600 font-medium">Terdaftar</span> : <span className="text-slate-400 italic">Anonim</span>}
-                        </TableCell>
-                        <TableCell>{format(new Date(fb.createdAt), "dd MMM yyyy", { locale: idLocale })}</TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                        {feedbackSearchTerm ? "Tidak ada feedback yang cocok dengan pencarian." : "Tidak ada feedback."}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+            <div className="flex items-center space-x-2 max-w-sm">
+              <Search className="h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Cari pesan atau email..."
+                value={feedbackSearchTerm}
+                onChange={(e) => handleFeedbackSearch(e.target.value)}
+                className="w-64"
+              />
+            </div>
+          </div>
 
-              {/* PAGINATION FEEDBACKS */}
-              {feedbackTotalPages > 1 && (
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
-                    Menampilkan {((feedbackCurrentPage - 1) * itemsPerPage) + 1} - {Math.min(feedbackCurrentPage * itemsPerPage, filteredFeedbacks.length)} dari {filteredFeedbacks.length} feedback
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleFeedbackPageChange(feedbackCurrentPage - 1)}
-                      disabled={feedbackCurrentPage === 1}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Sebelumnya
-                    </Button>
-                    <div className="flex items-center space-x-1">
-                      {Array.from({ length: Math.min(5, feedbackTotalPages) }, (_, i) => {
-                        const pageNum = i + 1;
-                        return (
-                          <Button
-                            key={pageNum}
-                            variant={feedbackCurrentPage === pageNum ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleFeedbackPageChange(pageNum)}
-                            className="w-8 h-8"
-                          >
-                            {pageNum}
-                          </Button>
-                        );
-                      })}
-                      {feedbackTotalPages > 5 && (
-                        <>
-                          <span className="text-muted-foreground">...</span>
-                          <Button
-                            variant={feedbackCurrentPage === feedbackTotalPages ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleFeedbackPageChange(feedbackTotalPages)}
-                            className="w-8 h-8"
-                          >
-                            {feedbackTotalPages}
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleFeedbackPageChange(feedbackCurrentPage + 1)}
-                      disabled={feedbackCurrentPage === feedbackTotalPages}
-                    >
-                      Selanjutnya
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
+          <div className="space-y-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">Rating</TableHead>
+                  <TableHead>Pesan</TableHead>
+                  <TableHead>User (Opsional)</TableHead>
+                  <TableHead>Tanggal</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedFeedbacks.length > 0 ? (
+                  paginatedFeedbacks.map((fb) => (
+                    <TableRow key={fb.id}>
+                      <TableCell>
+                        <div className="flex text-yellow-500">
+                          {/* Render Bintang */}
+                          {Array.from({ length: fb.rating }).map((_, i) => (
+                            <Star key={i} className="h-4 w-4 fill-current" />
+                          ))}
+                        </div>
+                      </TableCell>
+                      <TableCell className="max-w-md truncate" title={fb.message}>
+                        {fb.message}
+                      </TableCell>
+                      <TableCell>
+                        {fb.email ? <span className="text-green-600 font-medium">Terdaftar</span> : <span className="text-slate-400 italic">Anonim</span>}
+                      </TableCell>
+                      <TableCell>{format(new Date(fb.createdAt), "dd MMM yyyy", { locale: idLocale })}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                      {feedbackSearchTerm ? "Tidak ada feedback yang cocok dengan pencarian." : "Tidak ada feedback."}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+
+            {/* PAGINATION FEEDBACKS */}
+            {feedbackTotalPages > 1 && (
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">
+                  Menampilkan {((feedbackCurrentPage - 1) * itemsPerPage) + 1} - {Math.min(feedbackCurrentPage * itemsPerPage, filteredFeedbacks.length)} dari {filteredFeedbacks.length} feedback
                 </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleFeedbackPageChange(feedbackCurrentPage - 1)}
+                    disabled={feedbackCurrentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Sebelumnya
+                  </Button>
+                  <div className="flex items-center space-x-1">
+                    {Array.from({ length: Math.min(5, feedbackTotalPages) }, (_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={feedbackCurrentPage === pageNum ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleFeedbackPageChange(pageNum)}
+                          className="w-8 h-8"
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                    {feedbackTotalPages > 5 && (
+                      <>
+                        <span className="text-muted-foreground">...</span>
+                        <Button
+                          variant={feedbackCurrentPage === feedbackTotalPages ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleFeedbackPageChange(feedbackTotalPages)}
+                          className="w-8 h-8"
+                        >
+                          {feedbackTotalPages}
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleFeedbackPageChange(feedbackCurrentPage + 1)}
+                    disabled={feedbackCurrentPage === feedbackTotalPages}
+                  >
+                    Selanjutnya
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </TabsContent>
 
       {/* TAB DATABASE USAGE */}
