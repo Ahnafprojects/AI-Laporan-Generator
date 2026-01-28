@@ -31,7 +31,7 @@ export default function RegisterPage() {
       if (!res.ok) throw new Error(json.error);
 
       toast({
-        title: "Registrasi Berhasil! 🎉",
+        title: "Registrasi Berhasil!",
         description: "Akun berhasil dibuat. Cek email untuk konfirmasi!"
       });
       router.push("/login");
@@ -55,10 +55,10 @@ export default function RegisterPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-4">
             <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600">
-              AI Laporan
+              SmartLabs
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Buat Akun Baru 🚀</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Buat Akun Baru</h1>
           <p className="text-gray-500 mt-2">Isi data sekali, generate laporan berkali-kali.</p>
         </div>
 
@@ -71,29 +71,29 @@ export default function RegisterPage() {
             {/* BAGIAN 1: AKUN LOGIN */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Email PENS/Pribadi</label>
-                <Input name="email" type="email" required placeholder="nama@it.student.pens.ac.id" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
+                <label className="text-sm font-medium text-gray-700">Email</label>
+                <Input name="email" type="email" required placeholder="nama@email.com" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Password</label>
-                <Input name="password" type="password" required placeholder="******" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
+                <Input name="password" type="password" required placeholder="••••••••" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
               </div>
             </div>
 
             {/* BAGIAN 2: DATA MAHASISWA */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Nama Lengkap</label>
-              <Input name="name" required placeholder="Contoh: Muhammad Ahnaf" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
+              <Input name="name" required placeholder="Contoh: John Doe" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">NRP</label>
-                <Input name="nrp" required placeholder="31246000XX" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
+                <label className="text-sm font-medium text-gray-700">NIM / ID</label>
+                <Input name="nrp" required placeholder="12345678" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Kelas</label>
-                <Input name="kelas" required placeholder="2 D4 IT C" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
+                <label className="text-sm font-medium text-gray-700">Kelas / Divisi</label>
+                <Input name="kelas" required placeholder="Contoh: IF-A / Marketing" className="bg-white/50 border-gray-200 focus:bg-white transition-all h-11" />
               </div>
             </div>
 
@@ -106,27 +106,27 @@ export default function RegisterPage() {
                   <label className="text-xs font-medium text-gray-500">Program Studi</label>
                   <Input
                     name="prodi"
-                    defaultValue="PROGRAM STUDI SARJANA TERAPAN TEKNIK INFORMATIKA"
+                    placeholder="Contoh: Teknik Informatika"
                     required
                     className="bg-gray-50/50 uppercase text-xs border-gray-200"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-gray-500">Departemen</label>
+                  <label className="text-xs font-medium text-gray-500">Departemen / Fakultas</label>
                   <Input
                     name="departemen"
-                    defaultValue="DEPARTEMEN TEKNIK INFORMATIKA DAN KOMPUTER"
+                    placeholder="Contoh: Fakultas Teknik"
                     required
                     className="bg-gray-50/50 uppercase text-xs border-gray-200"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-medium text-gray-500">Institusi</label>
+                  <label className="text-xs font-medium text-gray-500">Institusi / Universitas</label>
                   <Input
                     name="institusi"
-                    defaultValue="POLITEKNIK ELEKTRONIKA NEGERI SURABAYA"
+                    placeholder="Contoh: Universitas Teknologi"
                     required
                     className="bg-gray-50/50 uppercase text-xs border-gray-200"
                   />

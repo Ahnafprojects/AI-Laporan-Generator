@@ -5,7 +5,7 @@ import { FileText, ArrowLeft, Calendar, User, Shield, CreditCard, Ban, FileCheck
 export const metadata: Metadata = {
   title: "Terms of Service | SmartLabs",
   description: "Terms of Service untuk AI-powered report generator SmartLabs. Ketentuan penggunaan platform, hak dan kewajiban pengguna, kebijakan pembayaran, dan aturan layanan.",
-  keywords: ["terms of service", "ketentuan layanan", "syarat penggunaan", "AI laporan generator", "SmartLabs"],
+  keywords: ["terms of service", "ketentuan layanan", "syarat penggunaan", "SmartLabs", "AI laporan generator"],
   openGraph: {
     title: "Terms of Service - SmartLabs",
     description: "Syarat dan ketentuan penggunaan platform AI-powered report generator untuk mahasiswa",
@@ -20,8 +20,8 @@ export default function TermsPage() {
     <div className="container max-w-4xl py-8 space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -69,7 +69,7 @@ export default function TermsPage() {
 
       {/* Main Content */}
       <div className="space-y-10">
-        
+
         {/* Section 1 */}
         <section id="acceptance" className="space-y-4">
           <h2 className="text-2xl font-semibold flex items-center space-x-3">
@@ -78,12 +78,12 @@ export default function TermsPage() {
           </h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Dengan mengakses dan menggunakan platform SmartLabs ("Layanan"), Anda menyetujui 
-              untuk terikat dengan Syarat dan Ketentuan ini ("Ketentuan"). Jika Anda tidak setuju dengan 
+              Dengan mengakses dan menggunakan platform SmartLabs ("Layanan"), Anda menyetujui
+              untuk terikat dengan Syarat dan Ketentuan ini ("Ketentuan"). Jika Anda tidak setuju dengan
               ketentuan ini, Anda tidak diperkenankan menggunakan Layanan kami.
             </p>
             <p>
-              Ketentuan ini merupakan perjanjian yang mengikat secara hukum antara Anda dan SmartLabs 
+              Ketentuan ini merupakan perjanjian yang mengikat secara hukum antara Anda dan SmartLabs
               terkait penggunaan platform AI-powered report generator kami.
             </p>
           </div>
@@ -94,8 +94,8 @@ export default function TermsPage() {
           <h2 className="text-2xl font-semibold">2. Deskripsi Layanan</h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              SmartLabs adalah platform Software as a Service (SaaS) yang menyediakan layanan 
-              pembuatan laporan praktikum otomatis menggunakan teknologi Artificial Intelligence (AI) 
+              SmartLabs adalah platform Software as a Service (SaaS) yang menyediakan layanan
+              pembuatan laporan praktikum otomatis menggunakan teknologi Artificial Intelligence (AI)
               untuk mahasiswa.
             </p>
             <p>Layanan yang kami sediakan meliputi:</p>
@@ -132,7 +132,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-semibold">4. Akun Pengguna</h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Anda bertanggung jawab untuk menjaga keamanan akun Anda, termasuk username dan password. 
+              Anda bertanggung jawab untuk menjaga keamanan akun Anda, termasuk username dan password.
               Anda setuju untuk:
             </p>
             <ul>
@@ -158,9 +158,9 @@ export default function TermsPage() {
               <li>Menyimpan dan mengelola riwayat laporan Anda</li>
             </ul>
             <p>
-              <strong>Penting:</strong> Platform ini dirancang sebagai alat bantu pembelajaran. 
-              Anda tetap bertanggung jawab untuk memastikan akurasi dan keaslian konten laporan 
-              yang dihasilkan. Gunakan output AI sebagai referensi dan sesuaikan dengan 
+              <strong>Penting:</strong> Platform ini dirancang sebagai alat bantu pembelajaran.
+              Anda tetap bertanggung jawab untuk memastikan akurasi dan keaslian konten laporan
+              yang dihasilkan. Gunakan output AI sebagai referensi dan sesuaikan dengan
               kebutuhan praktikum Anda.
             </p>
           </div>
@@ -179,7 +179,7 @@ export default function TermsPage() {
               <li><strong>PRO Monthly:</strong> Kuota unlimited dengan pembayaran bulanan</li>
               <li><strong>PRO Yearly:</strong> Kuota unlimited dengan pembayaran tahunan (diskon)</li>
             </ul>
-            
+
             <h3>6.2 Pembayaran</h3>
             <ul>
               <li>Pembayaran dilakukan melalui gateway Saweria</li>
@@ -190,7 +190,7 @@ export default function TermsPage() {
 
             <h3>6.3 Kode Redeem</h3>
             <p>
-              Kami menyediakan sistem kode redeem untuk promosi dan testing. Kode redeem 
+              Kami menyediakan sistem kode redeem untuk promosi dan testing. Kode redeem
               memiliki masa berlaku dan syarat penggunaan tertentu.
             </p>
           </div>
@@ -201,7 +201,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-semibold">7. Konten Pengguna</h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Dengan mengupload konten (teks, gambar, atau file lainnya) ke platform kami, 
+              Dengan mengupload konten (teks, gambar, atau file lainnya) ke platform kami,
               Anda menyatakan bahwa:
             </p>
             <ul>
@@ -223,13 +223,13 @@ export default function TermsPage() {
           </h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Semua hak kekayaan intelektual terkait platform SmartLabs, termasuk 
-              namun tidak terbatas pada kode sumber, desain, logo, dan merek dagang, 
+              Semua hak kekayaan intelektual terkait platform SmartLabs, termasuk
+              namun tidak terbatas pada kode sumber, desain, logo, dan merek dagang,
               adalah milik kami atau pemberi lisensi kami.
             </p>
             <p>
-              Laporan yang dihasilkan oleh platform tetap menjadi milik Anda, namun 
-              Anda memberikan kami hak untuk memproses dan menyimpan data tersebut 
+              Laporan yang dihasilkan oleh platform tetap menjadi milik Anda, namun
+              Anda memberikan kami hak untuk memproses dan menyimpan data tersebut
               untuk keperluan operasional layanan.
             </p>
           </div>
@@ -260,7 +260,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-semibold">10. Penghentian Layanan</h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Kami berhak menghentikan atau menangguhkan akses Anda ke layanan kami, 
+              Kami berhak menghentikan atau menangguhkan akses Anda ke layanan kami,
               dengan atau tanpa pemberitahuan, jika:
             </p>
             <ul>
@@ -270,7 +270,7 @@ export default function TermsPage() {
               <li>Diperlukan untuk melindungi keamanan platform dan pengguna lain</li>
             </ul>
             <p>
-              Anda dapat menghentikan akun Anda kapan saja melalui pengaturan profil 
+              Anda dapat menghentikan akun Anda kapan saja melalui pengaturan profil
               atau dengan menghubungi kami.
             </p>
           </div>
@@ -281,7 +281,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-semibold">11. Penafian Jaminan</h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Layanan kami disediakan "sebagaimana adanya" tanpa jaminan apapun. 
+              Layanan kami disediakan "sebagaimana adanya" tanpa jaminan apapun.
               Kami tidak menjamin bahwa:
             </p>
             <ul>
@@ -307,7 +307,7 @@ export default function TermsPage() {
               <li>Kerugian akibat penggunaan output AI yang tidak tepat</li>
             </ul>
             <p>
-              Total tanggung jawab kami tidak akan melebihi jumlah yang Anda bayarkan 
+              Total tanggung jawab kami tidak akan melebihi jumlah yang Anda bayarkan
               kepada kami dalam 12 bulan terakhir.
             </p>
           </div>
@@ -318,7 +318,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-semibold">13. Ganti Rugi</h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Anda setuju untuk melindungi dan membebaskan kami dari segala klaim, 
+              Anda setuju untuk melindungi dan membebaskan kami dari segala klaim,
               tuntutan, atau kerugian yang timbul dari:
             </p>
             <ul>
@@ -335,7 +335,7 @@ export default function TermsPage() {
           <h2 className="text-2xl font-semibold">14. Perubahan Ketentuan</h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Kami berhak mengubah ketentuan ini kapan saja. Perubahan akan 
+              Kami berhak mengubah ketentuan ini kapan saja. Perubahan akan
               diberitahukan melalui:
             </p>
             <ul>
@@ -344,7 +344,7 @@ export default function TermsPage() {
               <li>Pengumuman di halaman utama</li>
             </ul>
             <p>
-              Penggunaan berkelanjutan atas layanan setelah perubahan ketentuan 
+              Penggunaan berkelanjutan atas layanan setelah perubahan ketentuan
               menunjukkan persetujuan Anda terhadap ketentuan yang baru.
             </p>
           </div>
@@ -355,8 +355,8 @@ export default function TermsPage() {
           <h2 className="text-2xl font-semibold">15. Hukum yang Berlaku</h2>
           <div className="prose prose-gray dark:prose-invert max-w-none">
             <p>
-              Ketentuan ini diatur oleh dan ditafsirkan sesuai dengan hukum 
-              Republik Indonesia. Setiap sengketa akan diselesaikan melalui 
+              Ketentuan ini diatur oleh dan ditafsirkan sesuai dengan hukum
+              Republik Indonesia. Setiap sengketa akan diselesaikan melalui
               pengadilan yang berwenang di Surabaya, Jawa Timur.
             </p>
           </div>
@@ -383,16 +383,16 @@ export default function TermsPage() {
           Dengan menggunakan SmartLab, Anda menyetujui Ketentuan Layanan ini
         </p>
         <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-4 text-sm">
-          <Link 
-            href="/privacy" 
+          <Link
+            href="/privacy"
             className="text-primary hover:underline flex items-center space-x-1"
           >
             <Shield className="h-4 w-4" />
             <span>Privacy Policy</span>
           </Link>
           <span className="hidden md:inline text-muted-foreground">•</span>
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="text-primary hover:underline"
           >
             Kembali ke Platform

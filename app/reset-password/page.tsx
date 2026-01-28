@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { AlertCircle } from 'lucide-react';
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState('');
@@ -98,7 +99,7 @@ function ResetPasswordForm() {
 
         <div className="glass-panel p-8 rounded-2xl max-w-md w-full text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
-            <span className="text-2xl">⚠️</span>
+            <AlertCircle className="h-8 w-8 text-red-600" />
           </div>
           <h2 className="text-xl font-bold text-red-600 mb-2">Token Tidak Valid</h2>
           <p className="text-gray-500 mb-6">Link reset password ini sudah kadaluarsa atau tidak valid.</p>
@@ -120,7 +121,7 @@ function ResetPasswordForm() {
 
       <div className="w-full max-w-md p-4 relative z-10 animate-in fade-in zoom-in duration-500">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Reset Password 🔒</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Reset Password</h1>
           <p className="text-gray-500 mt-2">Buat password baru yang kuat dan aman.</p>
         </div>
 

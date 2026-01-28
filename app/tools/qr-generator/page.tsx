@@ -7,6 +7,8 @@ import { QRCodeCanvas } from "qrcode.react";
 import { Download, QrCode, Copy, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { useToolUsage } from "@/hooks/useToolUsage";
+import { useToast } from "@/hooks/use-toast";
 
 export default function QrGeneratorPage() {
   const [text, setText] = useState("");
@@ -14,10 +16,14 @@ export default function QrGeneratorPage() {
   const [fgColor, setFgColor] = useState("#000000");
   const [bgColor, setBgColor] = useState("#ffffff");
   const qrRef = useRef<HTMLDivElement>(null);
+  const { isLimited, incrementUsage, remaining } = useToolUsage("qr-generator");
+  const { toast } = useToast();
 
   const handleDownload = () => {
     const canvas = qrRef.current?.querySelector("canvas");
     if (canvas) {
+      if (!incrementUsage()) return; // Check limit
+
       const url = canvas.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = url;
@@ -43,7 +49,14 @@ export default function QrGeneratorPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4">
+    <div className="max-w-4xl mx-auto py-10 px-4 relative">
+      {/* Limit Indicator */}
+      <div className="fixed top-24 right-4 z-50">
+        <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
+          <span>Daily Limit:</span>
+          <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
+        </div>
+      </div>
       <div className="text-center mb-10">
         <h1 className="text-3xl font-bold text-gray-900 mb-2 flex justify-center items-center gap-2">
           <QrCode className="h-8 w-8 text-blue-600" /> QR Code Generator

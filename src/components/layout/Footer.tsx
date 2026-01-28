@@ -22,7 +22,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm text-gray-500 leading-relaxed">
-              AI-powered report generator untuk mahasiswa.
+              SmartLabs powered report generator untuk mahasiswa.
               Buat laporan praktikum berkualitas dengan teknologi terdepan.
             </p>
             <div className="flex items-center space-x-2 text-sm text-gray-500 hover:text-violet-600 transition-colors">

@@ -55,8 +55,8 @@ export default function Navbar() {
   return (
     <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4 px-4'}`}>
       <nav className={`max-w-7xl mx-auto transition-all duration-300 ${scrolled
-          ? 'bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-white/20 shadow-sm rounded-none w-full max-w-none px-6 py-3'
-          : 'bg-white/60 dark:bg-black/60 backdrop-blur-2xl rounded-2xl border border-white/40 shadow-xl shadow-indigo-500/5 px-6 py-3'
+        ? 'bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-white/20 shadow-sm rounded-none w-full max-w-none px-6 py-3'
+        : 'bg-white/60 dark:bg-black/60 backdrop-blur-2xl rounded-2xl border border-white/40 shadow-xl shadow-indigo-500/5 px-6 py-3'
         }`}>
         <div className="flex items-center justify-between">
           {/* Logo */}

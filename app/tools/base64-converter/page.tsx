@@ -7,6 +7,7 @@ import { ArrowLeftRight, Copy, Check, Binary, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useToolUsage } from "@/hooks/useToolUsage";
 
 export default function Base64Converter() {
     const { toast } = useToast();
@@ -14,6 +15,7 @@ export default function Base64Converter() {
     const [output, setOutput] = useState("");
     const [mode, setMode] = useState<"encode" | "decode">("encode");
     const [copied, setCopied] = useState(false);
+    const { isLimited, incrementUsage, remaining } = useToolUsage("base64-converter");
 
     const handleConvert = (currentInput: string, currentMode: "encode" | "decode") => {
         try {
@@ -49,6 +51,7 @@ export default function Base64Converter() {
 
     const copyToClipboard = () => {
         if (!output) return;
+        if (!incrementUsage()) return; // Limit usage on copy
         navigator.clipboard.writeText(output);
         setCopied(true);
         toast({ title: "Copied!", description: "Result copied to clipboard." });
@@ -61,6 +64,14 @@ export default function Base64Converter() {
             <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-blob"></div>
                 <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+            </div>
+
+            {/* Limit Indicator */}
+            <div className="fixed top-24 right-4 z-50">
+                <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
+                    <span>Daily Limit:</span>
+                    <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
+                </div>
             </div>
 
             <Navbar />

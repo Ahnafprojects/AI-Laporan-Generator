@@ -234,7 +234,7 @@ export default function InvoiceGeneratorPage() {
                             {/* FOOTER */}
                             <div className="mt-auto pt-8 border-t text-center text-gray-400 text-xs">
                                 <p>Terima kasih atas kepercayaan Anda.</p>
-                                <p>Genereated automatically by AI Laporan Tools</p>
+                                <p>Generated automatically by SmartLabs Tools</p>
                             </div>
 
                         </div>

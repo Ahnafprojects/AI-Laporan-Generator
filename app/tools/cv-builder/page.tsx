@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Wand2, Plus, Trash2, FileText, Image as ImageIcon } from "lucide-react";
+import { useToolUsage } from "@/hooks/useToolUsage";
 
 export default function CVBuilderPage() {
+  const { isLimited, incrementUsage, remaining } = useToolUsage("cv-builder");
   // --- STATE DATA CV ---
   const [personal, setPersonal] = useState({
     name: "NAMA LENGKAP",
@@ -19,9 +21,9 @@ export default function CVBuilderPage() {
 
   // State khusus Foto
   const [photo, setPhoto] = useState<string | null>(null);
-  
+
   const [summary, setSummary] = useState("Tulis ringkasan singkat tentang dirimu di sini...");
-  
+
   const [experiences, setExperiences] = useState([
     { id: 1, company: "Nama Perusahaan", role: "Posisi Pekerjaan", date: "Jan 2023 - Des 2023", bullets: ["Jelaskan tugasmu di sini..."] }
   ]);
@@ -37,7 +39,7 @@ export default function CVBuilderPage() {
 
   // --- HANDLERS ---
   const handlePersonal = (e: any) => setPersonal({ ...personal, [e.target.name]: e.target.value });
-  
+
   // Handle Upload Foto
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -53,7 +55,7 @@ export default function CVBuilderPage() {
   const updateExp = (id: number, field: string, val: any) => {
     setExperiences(experiences.map(e => e.id === id ? { ...e, [field]: val } : e));
   };
-  
+
   const addEdu = () => setEducations([...educations, { id: Date.now(), school: "", degree: "", date: "", gpa: "" }]);
   const removeEdu = (id: number) => setEducations(educations.filter(e => e.id !== id));
   const updateEdu = (id: number, field: string, val: string) => {
@@ -63,12 +65,12 @@ export default function CVBuilderPage() {
   // --- AI MAGIC ---
   const optimizeSummary = async () => {
     const textToOptimize = summary.trim();
-    
+
     if (!textToOptimize || textToOptimize === "Tulis ringkasan singkat tentang dirimu di sini...") {
       alert("Tulis ringkasan tentang dirimu terlebih dahulu sebelum menggunakan AI");
       return;
     }
-    
+
     setLoadingAI(true);
     try {
       const res = await fetch("/api/cv/optimize", {
@@ -78,10 +80,10 @@ export default function CVBuilderPage() {
         },
         body: JSON.stringify({ text: textToOptimize, type: "summary" }) // Remove hardcoded lang
       });
-      
+
       const json = await res.json();
       console.log("Summary optimize response:", json);
-      
+
       if (json.success) {
         setSummary(json.data);
         if (json.usageInfo) {
@@ -106,12 +108,12 @@ export default function CVBuilderPage() {
 
   const optimizeBullets = async (id: number, text: string) => {
     const textToOptimize = text.trim();
-    
+
     if (!textToOptimize) {
       alert("Masukkan deskripsi pekerjaan terlebih dahulu");
       return;
     }
-    
+
     setLoadingAI(true);
     try {
       const res = await fetch("/api/cv/optimize", {
@@ -121,10 +123,10 @@ export default function CVBuilderPage() {
         },
         body: JSON.stringify({ text: textToOptimize, type: "bullet" }) // Remove hardcoded lang
       });
-      
+
       const json = await res.json();
       console.log("Bullets optimize response:", json);
-      
+
       if (json.success && Array.isArray(json.data)) {
         updateExp(id, 'bullets', json.data);
         if (json.usageInfo) {
@@ -149,12 +151,12 @@ export default function CVBuilderPage() {
 
   const optimizeSkills = async () => {
     const textToOptimize = skills.trim();
-    
+
     if (!textToOptimize || textToOptimize === "Skill 1, Skill 2, Skill 3") {
       alert("Masukkan skills kamu terlebih dahulu sebelum menggunakan AI");
       return;
     }
-    
+
     setLoadingAI(true);
     try {
       const res = await fetch("/api/cv/optimize", {
@@ -164,10 +166,10 @@ export default function CVBuilderPage() {
         },
         body: JSON.stringify({ text: textToOptimize, type: "skills" }) // Remove hardcoded lang
       });
-      
+
       const json = await res.json();
       console.log("Skills optimize response:", json);
-      
+
       if (json.success) {
         setSkills(json.data);
         if (json.usageInfo) {
@@ -192,8 +194,10 @@ export default function CVBuilderPage() {
 
   // --- EXPORT TO WORD (VERSI TABEL ANTI-HANCUR) ---
   const componentRef = useRef<HTMLDivElement>(null);
-  
+
   const exportToWord = () => {
+    if (!incrementUsage()) return; // Check limit
+
     // Prepare data untuk HTML generator
     const cvData = {
       personal: personal,
@@ -203,10 +207,10 @@ export default function CVBuilderPage() {
       skills: skills,
       photo: photo
     };
-    
+
     // Generate HTML dengan versi tabel anti-hancur
     const wordHTML = generateHarvardHTML(cvData);
-    
+
     // Create blob and download
     const blob = new Blob([wordHTML], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
@@ -318,9 +322,9 @@ export default function CVBuilderPage() {
           ${data.skills && data.skills !== 'Skill 1, Skill 2, Skill 3' ? `
           <div class="section-title">Skills</div>
           <div style="line-height: 1.4;">
-            ${data.skills.split('\n').map((line: string) => 
-              line.trim() ? `<div style="margin-bottom: 3px;">${line}</div>` : ''
-            ).join('')}
+            ${data.skills.split('\n').map((line: string) =>
+      line.trim() ? `<div style="margin-bottom: 3px;">${line}</div>` : ''
+    ).join('')}
           </div>
           ` : ''}
 
@@ -332,12 +336,12 @@ export default function CVBuilderPage() {
 
   return (
     <div className="flex flex-col lg:flex-row h-screen bg-gray-100 overflow-hidden font-sans">
-      
+
       {/* KIRI: EDITOR FORM */}
       <div className="w-full lg:w-1/3 bg-white border-r overflow-y-auto p-6 space-y-8 pb-32">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-800">CV Builder</h1>
-          
+
           {/* AI Usage Indicator */}
           <div className="text-xs bg-gray-100 px-3 py-1 rounded-full border">
             {usageInfo.isPro ? (
@@ -349,11 +353,11 @@ export default function CVBuilderPage() {
             )}
           </div>
         </div>
-        
+
         {/* 1. PERSONAL & FOTO */}
         <div className="space-y-4">
           <h3 className="font-bold text-blue-600 uppercase text-sm">Data Pribadi</h3>
-          
+
           {/* UPLOAD FOTO */}
           <div className="flex items-center gap-4 bg-blue-50 p-3 rounded-lg border border-blue-100">
             <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden flex-shrink-0 border-2 border-white shadow-sm">
@@ -384,12 +388,12 @@ export default function CVBuilderPage() {
           <div className="flex justify-between">
             <h3 className="font-bold text-blue-600 uppercase text-sm">Professional Summary</h3>
             <Button size="sm" variant="outline" onClick={optimizeSummary} disabled={loadingAI}>
-              {loadingAI ? <Loader2 className="w-3 h-3 animate-spin"/> : <Wand2 className="w-3 h-3 mr-1"/>} AI Polish
+              {loadingAI ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3 mr-1" />} AI Polish
             </Button>
           </div>
-          <Textarea 
-            value={summary} 
-            onChange={(e) => setSummary(e.target.value)} 
+          <Textarea
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
             placeholder="Contoh: Saya fresh graduate jurusan IT yang suka coding dan design. Punya pengalaman magang di startup. Mahir JavaScript dan React."
             className="h-32 text-sm"
           />
@@ -400,12 +404,12 @@ export default function CVBuilderPage() {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="font-bold text-blue-600 uppercase text-sm">Pengalaman</h3>
-            <Button size="sm" onClick={addExp} variant="ghost"><Plus className="w-4 h-4"/></Button>
+            <Button size="sm" onClick={addExp} variant="ghost"><Plus className="w-4 h-4" /></Button>
           </div>
           {experiences.map((exp, idx) => (
             <div key={exp.id} className="p-4 border rounded-lg bg-gray-50 relative space-y-2">
-              <button onClick={() => removeExp(exp.id)} className="absolute top-2 right-2 text-red-400"><Trash2 className="w-4 h-4"/></button>
-              <Input placeholder="Perusahaan" value={exp.company} onChange={(e) => updateExp(exp.id, 'company', e.target.value)} className="font-bold"/>
+              <button onClick={() => removeExp(exp.id)} className="absolute top-2 right-2 text-red-400"><Trash2 className="w-4 h-4" /></button>
+              <Input placeholder="Perusahaan" value={exp.company} onChange={(e) => updateExp(exp.id, 'company', e.target.value)} className="font-bold" />
               <div className="flex gap-2">
                 <Input placeholder="Posisi" value={exp.role} onChange={(e) => updateExp(exp.id, 'role', e.target.value)} />
                 <Input placeholder="Tahun" value={exp.date} onChange={(e) => updateExp(exp.id, 'date', e.target.value)} />
@@ -414,10 +418,10 @@ export default function CVBuilderPage() {
                 <div className="flex justify-between mb-1">
                   <span className="text-xs text-gray-500">Deskripsi (Kasar aja)</span>
                   <Button size="sm" variant="outline" onClick={() => optimizeBullets(exp.id, exp.bullets.join(". "))} disabled={loadingAI}>
-                    <Wand2 className="w-3 h-3 mr-1"/> AI Fix Bullets
+                    <Wand2 className="w-3 h-3 mr-1" /> AI Fix Bullets
                   </Button>
                 </div>
-                <Textarea 
+                <Textarea
                   placeholder="Contoh: Saya ngurusin database..."
                   value={Array.isArray(exp.bullets) ? exp.bullets.join("\n") : exp.bullets}
                   onChange={(e) => updateExp(exp.id, 'bullets', e.target.value.split("\n"))}
@@ -430,17 +434,17 @@ export default function CVBuilderPage() {
 
         {/* 4. EDUCATION */}
         <div className="space-y-4">
-           <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center">
             <h3 className="font-bold text-blue-600 uppercase text-sm">Pendidikan</h3>
-            <Button size="sm" onClick={addEdu} variant="ghost"><Plus className="w-4 h-4"/></Button>
+            <Button size="sm" onClick={addEdu} variant="ghost"><Plus className="w-4 h-4" /></Button>
           </div>
           {educations.map((edu) => (
             <div key={edu.id} className="p-4 border rounded-lg bg-gray-50 relative space-y-2">
-              <button onClick={() => removeEdu(edu.id)} className="absolute top-2 right-2 text-red-400"><Trash2 className="w-4 h-4"/></button>
-              <Input placeholder="Nama Kampus" value={edu.school} onChange={(e) => updateEdu(edu.id, 'school', e.target.value)} className="font-bold"/>
+              <button onClick={() => removeEdu(edu.id)} className="absolute top-2 right-2 text-red-400"><Trash2 className="w-4 h-4" /></button>
+              <Input placeholder="Nama Kampus" value={edu.school} onChange={(e) => updateEdu(edu.id, 'school', e.target.value)} className="font-bold" />
               <div className="flex gap-2">
-                 <Input placeholder="Jurusan" value={edu.degree} onChange={(e) => updateEdu(edu.id, 'degree', e.target.value)} />
-                 <Input placeholder="Tahun" value={edu.date} onChange={(e) => updateEdu(edu.id, 'date', e.target.value)} />
+                <Input placeholder="Jurusan" value={edu.degree} onChange={(e) => updateEdu(edu.id, 'degree', e.target.value)} />
+                <Input placeholder="Tahun" value={edu.date} onChange={(e) => updateEdu(edu.id, 'date', e.target.value)} />
               </div>
               <Input placeholder="IPK / Honors" value={edu.gpa} onChange={(e) => updateEdu(edu.id, 'gpa', e.target.value)} />
             </div>
@@ -452,12 +456,12 @@ export default function CVBuilderPage() {
           <div className="flex justify-between">
             <h3 className="font-bold text-blue-600 uppercase text-sm">Skills</h3>
             <Button size="sm" variant="outline" onClick={optimizeSkills} disabled={loadingAI}>
-              {loadingAI ? <Loader2 className="w-3 h-3 animate-spin"/> : <Wand2 className="w-3 h-3 mr-1"/>} AI Polish
+              {loadingAI ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3 mr-1" />} AI Polish
             </Button>
           </div>
-          <Textarea 
-            value={skills} 
-            onChange={(e) => setSkills(e.target.value)} 
+          <Textarea
+            value={skills}
+            onChange={(e) => setSkills(e.target.value)}
             placeholder="Contoh: HTML, CSS, JavaScript, React, Node.js, Python, Photoshop, Leadership, Public Speaking"
             className="h-20 text-sm"
           />
@@ -469,13 +473,14 @@ export default function CVBuilderPage() {
       <div className="w-full lg:w-2/3 bg-gray-500 p-8 flex justify-center overflow-y-auto relative">
         <div className="fixed bottom-8 right-8 z-50">
           <Button onClick={exportToWord} className="bg-blue-600 hover:bg-blue-700 shadow-xl h-14 px-8 rounded-full text-lg font-bold">
-            <FileText className="mr-2"/> Download Word
+            <FileText className="mr-2" /> Download Word
           </Button>
         </div>
 
         {/* --- KERTAS HARVARD (Dengan Foto) --- */}
         <div ref={componentRef} className="bg-white shadow-2xl w-[210mm] min-h-[297mm] p-[15mm_20mm] box-border text-black print:shadow-none">
-          <style dangerouslySetInnerHTML={{__html: `
+          <style dangerouslySetInnerHTML={{
+            __html: `
             @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap');
             .cv-preview { font-family: 'Times New Roman', serif; line-height: 1.3; font-size: 11pt; color: #000; }
             
@@ -523,19 +528,19 @@ export default function CVBuilderPage() {
           `}} />
 
           <div className="cv-preview">
-            
+
             {/* HEADER FLEXBOX (Kalau ada foto dia ke kanan, kalau gak ada dia tengah) */}
             <div className="cv-header-container">
               <div className="cv-header-text">
                 <div className="cv-name">{personal.name}</div>
                 <div className="cv-contact">
-                  {personal.email} | {personal.phone} <br/>
-                  {personal.address} <br/>
+                  {personal.email} | {personal.phone} <br />
+                  {personal.address} <br />
                   {personal.linkedin}
-                  {personal.portfolio && <><br/>{personal.portfolio}</>}
+                  {personal.portfolio && <><br />{personal.portfolio}</>}
                 </div>
               </div>
-              
+
               {photo && (
                 <div className="cv-photo-box">
                   <img src={photo} alt="Profile" className="cv-photo-img" />
@@ -593,6 +598,13 @@ export default function CVBuilderPage() {
             </div>
 
           </div>
+        </div>
+      </div>
+      {/* Limit Indicator */}
+      <div className="fixed top-24 right-4 z-50">
+        <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
+          <span>Daily Limit:</span>
+          <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
         </div>
       </div>
     </div>

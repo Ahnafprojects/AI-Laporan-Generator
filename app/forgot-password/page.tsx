@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
 
       <div className="w-full max-w-md p-4 relative z-10 animate-in fade-in zoom-in duration-500">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Lupa Password? 🔑</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Lupa Password?</h1>
           <p className="text-gray-500 mt-2">Jangan panik, kami bantu reset passwordmu.</p>
         </div>
 

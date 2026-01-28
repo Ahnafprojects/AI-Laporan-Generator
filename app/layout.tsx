@@ -11,8 +11,8 @@ import AuthProvider from "@/components/providers/AuthProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI Laporan Generator",
-  description: "Buat laporan praktikum otomatis dengan AI",
+  title: "SmartLabs",
+  description: "Platform tools produktivitas mahasiswa & AI Laporan Generator",
 };
 
 export default function RootLayout({

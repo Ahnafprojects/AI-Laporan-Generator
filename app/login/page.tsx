@@ -26,7 +26,7 @@ function LoginForm() {
 
     if (verified === 'true') {
       toast({
-        title: "Email Terverifikasi! ✅",
+        title: "Email Terverifikasi!",
         description: "Akun Anda berhasil diverifikasi. Silakan login.",
       });
     }
@@ -97,10 +97,10 @@ function LoginForm() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-4">
             <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600">
-              AI Laporan
+              SmartLabs
             </span>
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Selamat Datang Kembali! 👋</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Selamat Datang Kembali!</h1>
           <p className="text-gray-500 mt-2">Masuk untuk mulai generate laporanmu.</p>
         </div>
 
