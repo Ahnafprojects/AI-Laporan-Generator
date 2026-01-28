@@ -33,7 +33,7 @@ export default function CVBuilderPage() {
   const [skills, setSkills] = useState("Skill 1, Skill 2, Skill 3");
 
   const [loadingAI, setLoadingAI] = useState(false);
-  const [usageInfo, setUsageInfo] = useState({ currentUsage: 0, maxUsage: 3, isPro: false });
+  const [usageInfo, setUsageInfo] = useState({ currentUsage: 0, maxUsage: 5, isPro: false });
 
   // --- HANDLERS ---
   const handlePersonal = (e: any) => setPersonal({ ...personal, [e.target.name]: e.target.value });
@@ -87,14 +87,14 @@ export default function CVBuilderPage() {
         if (json.usageInfo) {
           setUsageInfo(json.usageInfo);
           if (!json.usageInfo.isPro) {
-            alert(`✅ Summary berhasil di-optimize!\n📊 Penggunaan AI hari ini: ${json.usageInfo.currentUsage}/${json.usageInfo.maxUsage}`);
+            alert(`Summary berhasil dioptimasi!\n\nPenggunaan AI hari ini: ${json.usageInfo.currentUsage}/${json.usageInfo.maxUsage}`);
           }
         }
       } else {
         if (json.error?.includes('Daily AI usage limit')) {
-          alert(`❌ ${json.error}\n\n💎 Upgrade ke Pro untuk unlimited AI access!`);
+          alert(`Batas Penggunaan AI Tercapai\n\n${json.error}\n\nUpgrade ke PRO untuk akses unlimited AI`);
         } else {
-          alert(`❌ Gagal optimize summary: ${json.error || 'Unknown error'}`);
+          alert(`Gagal mengoptimasi summary: ${json.error || 'Unknown error'}`);
         }
       }
     } catch (e) {
@@ -130,14 +130,14 @@ export default function CVBuilderPage() {
         if (json.usageInfo) {
           setUsageInfo(json.usageInfo);
           if (!json.usageInfo.isPro) {
-            alert(`✅ Bullet points berhasil di-optimize!\n📊 Penggunaan AI hari ini: ${json.usageInfo.currentUsage}/${json.usageInfo.maxUsage}`);
+            alert(`Bullet points berhasil dioptimasi!\n\nPenggunaan AI hari ini: ${json.usageInfo.currentUsage}/${json.usageInfo.maxUsage}`);
           }
         }
       } else {
         if (json.error?.includes('Daily AI usage limit')) {
-          alert(`❌ ${json.error}\n\n💎 Upgrade ke Pro untuk unlimited AI access!`);
+          alert(`Batas Penggunaan AI Tercapai\n\n${json.error}\n\nUpgrade ke PRO untuk akses unlimited AI`);
         } else {
-          alert(`❌ Gagal optimize bullets: ${json.error || 'Response tidak valid'}`);
+          alert(`Gagal mengoptimasi bullets: ${json.error || 'Response tidak valid'}`);
         }
       }
     } catch (e) {
@@ -173,14 +173,14 @@ export default function CVBuilderPage() {
         if (json.usageInfo) {
           setUsageInfo(json.usageInfo);
           if (!json.usageInfo.isPro) {
-            alert(`✅ Skills berhasil di-optimize!\n📊 Penggunaan AI hari ini: ${json.usageInfo.currentUsage}/${json.usageInfo.maxUsage}`);
+            alert(`Skills berhasil dioptimasi!\n\nPenggunaan AI hari ini: ${json.usageInfo.currentUsage}/${json.usageInfo.maxUsage}`);
           }
         }
       } else {
         if (json.error?.includes('Daily AI usage limit')) {
-          alert(`❌ ${json.error}\n\n💎 Upgrade ke Pro untuk unlimited AI access!`);
+          alert(`Batas Penggunaan AI Tercapai\n\n${json.error}\n\nUpgrade ke PRO untuk akses unlimited AI`);
         } else {
-          alert(`❌ Gagal optimize skills: ${json.error || 'Response tidak valid'}`);
+          alert(`Gagal mengoptimasi skills: ${json.error || 'Response tidak valid'}`);
         }
       }
     } catch (e) {
@@ -341,10 +341,10 @@ export default function CVBuilderPage() {
           {/* AI Usage Indicator */}
           <div className="text-xs bg-gray-100 px-3 py-1 rounded-full border">
             {usageInfo.isPro ? (
-              <span className="text-purple-600 font-bold">🔥 PRO: Unlimited</span>
+              <span className="text-purple-600 font-bold">PRO: Unlimited</span>
             ) : (
               <span className="text-gray-600">
-                🤖 AI Today: <b>{usageInfo.currentUsage}/{usageInfo.maxUsage}</b>
+                AI Today: <b>{usageInfo.currentUsage}/{usageInfo.maxUsage}</b>
               </span>
             )}
           </div>

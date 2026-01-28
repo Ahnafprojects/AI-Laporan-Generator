@@ -85,8 +85,8 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50">
+      <Card className="w-full max-w-md shadow-2xl bg-gradient-to-br from-white/90 to-blue-50/50 backdrop-blur-2xl border border-white/40">
         <CardHeader>
           <CardTitle className="text-center">Masuk ke Akun</CardTitle>
         </CardHeader>

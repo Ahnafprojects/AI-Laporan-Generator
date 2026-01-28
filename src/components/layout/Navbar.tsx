@@ -43,23 +43,24 @@ export default function Navbar() {
   }, [session, status]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg shadow-black/5">
-      <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-          <div className="relative">
-            <Sparkles className="h-6 w-6 text-blue-600" />
-            <div className="absolute inset-0 h-6 w-6 text-purple-600 opacity-50 animate-pulse">
-              <Sparkles className="h-6 w-6" />
+    <div className="fixed top-0 left-0 right-0 z-50 px-4 md:px-8 pt-4">
+      <nav className="max-w-7xl mx-auto bg-gradient-to-r from-white/70 via-blue-50/50 to-purple-50/50 backdrop-blur-2xl rounded-2xl border border-white/40 shadow-2xl shadow-blue-500/10 px-6 py-3">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+            <div className="relative">
+              <Sparkles className="h-6 w-6 text-blue-600" />
+              <div className="absolute inset-0 h-6 w-6 text-purple-600 opacity-50 animate-pulse">
+                <Sparkles className="h-6 w-6" />
+              </div>
             </div>
-          </div>
-          <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent font-black">
-            SmartLabs
-          </span>
-        </Link>
+            <span className="text-gray-900 font-black">
+              SmartLabs
+            </span>
+          </Link>
 
-        {/* Menu Kanan */}
-        <div className="flex items-center gap-4">
+          {/* Menu Kanan */}
+          <div className="flex items-center gap-4">
           
           {/* LOGIC TOMBOL LOGIN / USER */}
           {status === "loading" ? (
@@ -151,5 +152,6 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
+    </div>
   );
 }

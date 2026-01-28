@@ -43,8 +43,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-100 p-4 py-8">
-      <Card className="w-full max-w-xl shadow-lg">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 p-4 py-8">
+      <Card className="w-full max-w-xl shadow-2xl bg-gradient-to-br from-white/90 to-purple-50/50 backdrop-blur-2xl border border-white/40">
         <CardHeader>
           <CardTitle className="text-center text-xl">Daftar Akun Baru</CardTitle>
         </CardHeader>

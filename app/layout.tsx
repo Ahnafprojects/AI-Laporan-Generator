@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className={cn(inter.className, "min-h-screen flex flex-col")}>
         <AuthProvider>
           <Navbar />
-          <main className="flex-1 pt-16">
+          <main className="flex-1 pt-24">
             {children}
           </main>
           <Footer />

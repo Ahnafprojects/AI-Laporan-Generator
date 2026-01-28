@@ -61,7 +61,7 @@ export function FeedbackDialog() {
           Beri Masukan
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-gradient-to-br from-white/95 to-blue-50/60 backdrop-blur-2xl border border-white/40">
         <DialogHeader>
           <DialogTitle>Kirim Masukan / Lapor Bug</DialogTitle>
           <DialogDescription>

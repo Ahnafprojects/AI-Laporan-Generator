@@ -12,7 +12,7 @@ export default function CoverLetterPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
   const [showPreview, setShowPreview] = useState(false);
-  const [usageInfo, setUsageInfo] = useState({ currentUsage: 0, maxUsage: 3, isPro: false });
+  const [usageInfo, setUsageInfo] = useState({ currentUsage: 0, maxUsage: 5, isPro: false });
   const { toast } = useToast();
   
   // State form
@@ -53,21 +53,21 @@ export default function CoverLetterPage() {
           setUsageInfo(data.usageInfo);
           if (!data.usageInfo.isPro) {
             toast({
-              title: "✅ Cover Letter Generated!",
-              description: `AI usage: ${data.usageInfo.currentUsage}/${data.usageInfo.maxUsage} today`,
+              title: "Cover Letter Berhasil Dibuat",
+              description: `Penggunaan AI hari ini: ${data.usageInfo.currentUsage}/${data.usageInfo.maxUsage}`,
             });
           }
         }
       } else {
         if (data.error?.includes('Daily AI usage limit')) {
-          alert(`❌ ${data.error}\n\n💎 Upgrade ke Pro untuk unlimited AI access!`);
+          alert(`Batas Penggunaan AI Tercapai\n\n${data.error}\n\nUpgrade ke PRO untuk akses unlimited AI`);
         } else {
-          alert(`❌ Error: ${data.error || 'Failed to generate'}`);
+          alert(`Error: ${data.error || 'Failed to generate'}`);
         }
       }
     } catch (error) {
       console.error("Cover letter generation error:", error);
-      alert("❌ Error generating cover letter");
+      alert("Error: Gagal membuat cover letter. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -118,10 +118,10 @@ export default function CoverLetterPage() {
           {/* AI Usage Indicator */}
           <div className="text-xs bg-gray-100 px-3 py-2 rounded-full border">
             {usageInfo.isPro ? (
-              <span className="text-purple-600 font-bold">🔥 PRO: Unlimited</span>
+              <span className="text-purple-600 font-bold">PRO: Unlimited</span>
             ) : (
               <span className="text-gray-600">
-                🤖 AI Today: <b>{usageInfo.currentUsage}/{usageInfo.maxUsage}</b>
+                AI Today: <b>{usageInfo.currentUsage}/{usageInfo.maxUsage}</b>
               </span>
             )}
           </div>
@@ -131,7 +131,7 @@ export default function CoverLetterPage() {
       
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Form Input */}
-        <div className="bg-white p-6 rounded-xl border shadow-lg">
+        <div className="bg-gradient-to-br from-white/90 to-blue-50/50 backdrop-blur-xl p-6 rounded-xl border border-white/40 shadow-2xl">
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Data Pribadi</h2>
           
           <div className="grid gap-4">
@@ -276,7 +276,7 @@ export default function CoverLetterPage() {
 
       {/* Tips Section */}
       <div className="mt-8 grid md:grid-cols-2 gap-6">
-        <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
+        <div className="bg-gradient-to-br from-blue-50/80 to-white/60 backdrop-blur-xl p-6 rounded-xl border border-blue-200/50 shadow-xl">
           <h3 className="font-bold text-blue-800 mb-3">Tips Cover Letter yang Mengesankan:</h3>
           <ul className="text-blue-700 text-sm space-y-1">
             <li>• <strong>Research perusahaan</strong> - Sebutkan spesifik kenapa tertarik dengan perusahaan tersebut</li>
@@ -286,7 +286,7 @@ export default function CoverLetterPage() {
           </ul>
         </div>
         
-        <div className="bg-amber-50 p-6 rounded-xl border border-amber-200">
+        <div className="bg-gradient-to-br from-amber-50/80 to-white/60 backdrop-blur-xl p-6 rounded-xl border border-amber-200/50 shadow-xl">
           <h3 className="font-bold text-amber-800 mb-3">Penting untuk Diperhatikan:</h3>
           <ul className="text-amber-700 text-sm space-y-1">
             <li>• <strong>Review hasil AI</strong> - Selalu periksa dan edit sesuai kondisi nyata Anda</li>

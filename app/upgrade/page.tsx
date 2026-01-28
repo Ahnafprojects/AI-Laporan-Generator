@@ -83,7 +83,7 @@ export default function UpgradePage() {
       </div>
 
       {/* Redeem Code Section */}
-      <div className="max-w-md mx-auto mb-8 bg-blue-50 p-4 rounded-lg border border-blue-200">
+      <div className="max-w-md mx-auto mb-8 bg-gradient-to-br from-blue-50/80 to-purple-50/60 backdrop-blur-xl p-4 rounded-xl border border-white/40 shadow-xl">
         <div className="flex items-center gap-2 mb-3">
           <Gift className="h-5 w-5 text-blue-500" />
           <span className="font-medium text-blue-700">Punya Kode Diskon?</span>
@@ -127,7 +127,7 @@ export default function UpgradePage() {
 
       <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {/* FREE PLAN */}
-        <Card className="border-2">
+        <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/90 to-gray-50/70 backdrop-blur-2xl border border-white/40">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Zap className="h-5 w-5" />

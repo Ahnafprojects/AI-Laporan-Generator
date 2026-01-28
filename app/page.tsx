@@ -11,7 +11,7 @@ export default async function Home() {
     <div className="flex flex-col min-h-screen">
       
       {/* HERO SECTION */}
-      <section className="relative py-20 lg:py-32 overflow-hidden bg-slate-50 dark:bg-slate-950">
+      <section className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 dark:bg-slate-950">
         <div className="container px-4 md:px-6 relative z-10 text-center">
           <div className="inline-block px-3 py-1 mb-4 text-sm font-semibold tracking-wider text-blue-600 uppercase bg-blue-100 rounded-full">
             Untuk Mahasiswa
@@ -70,7 +70,7 @@ export default async function Home() {
           </div>
 
           <div className="grid gap-8 md:grid-cols-3">
-            <Card className="border-0 shadow-lg bg-slate-50/50">
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/80 to-blue-50/50 backdrop-blur-xl border border-white/40">
               <CardHeader>
                 <FileText className="h-10 w-10 text-blue-600 mb-2" />
                 <CardTitle>Format Profesional</CardTitle>
@@ -80,7 +80,7 @@ export default async function Home() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg bg-slate-50/50">
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/80 to-yellow-50/50 backdrop-blur-xl border border-white/40">
               <CardHeader>
                 <Zap className="h-10 w-10 text-yellow-500 mb-2" />
                 <CardTitle>AI Super Cerdas</CardTitle>
@@ -90,7 +90,7 @@ export default async function Home() {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg bg-slate-50/50">
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/80 to-green-50/50 backdrop-blur-xl border border-white/40">
               <CardHeader>
                 <ShieldCheck className="h-10 w-10 text-green-600 mb-2" />
                 <CardTitle>Privasi Aman</CardTitle>
@@ -133,7 +133,7 @@ export default async function Home() {
             </div>
             
             {/* Visualisasi Mockup Sederhana */}
-            <div className="flex-1 bg-white p-6 rounded-2xl shadow-2xl border border-slate-200 rotate-2 hover:rotate-0 transition-transform duration-500">
+            <div className="flex-1 bg-gradient-to-br from-white/90 to-slate-50/80 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/50 rotate-2 hover:rotate-0 transition-transform duration-500">
               <div className="flex items-center gap-2 mb-4 border-b pb-2">
                 <div className="w-3 h-3 rounded-full bg-red-500" />
                 <div className="w-3 h-3 rounded-full bg-yellow-500" />
@@ -155,7 +155,7 @@ export default async function Home() {
       </section>
 
       {/* TOOLS SECTION */}
-      <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
+      <section className="py-20 bg-gradient-to-br from-purple-50/70 via-blue-50/50 to-pink-50/70 dark:from-purple-950/20 dark:to-blue-950/20">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold tracking-tight mb-4">Tools Tambahan</h2>
@@ -166,7 +166,7 @@ export default async function Home() {
 
           <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
             {/* Cover Letter Tool */}
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group">
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/90 to-blue-50/60 backdrop-blur-2xl border border-white/40 hover:shadow-blue-500/20 hover:border-blue-200/50 transition-all duration-300 group">
               <CardHeader className="text-center pb-4">
                 <div className="mx-auto mb-4 w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <Mail className="h-8 w-8 text-blue-600" />
@@ -189,7 +189,7 @@ export default async function Home() {
             </Card>
 
             {/* CV Maker Tool */}
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group">
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-white/90 to-purple-50/60 backdrop-blur-2xl border border-white/40 hover:shadow-purple-500/20 hover:border-purple-200/50 transition-all duration-300 group">
               <CardHeader className="text-center pb-4">
                 <div className="mx-auto mb-4 w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <Wand2 className="h-8 w-8 text-purple-600" />

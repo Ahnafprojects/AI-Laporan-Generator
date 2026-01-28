@@ -433,7 +433,7 @@ export default async function AdminDashboard() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">Daily Limit (Free):</span>
-                <span className="font-semibold text-indigo-600">3 requests</span>
+                <span className="font-semibold text-indigo-600">5 requests</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-muted-foreground">PRO Users:</span>

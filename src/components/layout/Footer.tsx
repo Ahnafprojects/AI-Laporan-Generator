@@ -4,7 +4,7 @@ import { Crown, Mail, Shield, FileText } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-slate-50 dark:bg-slate-950 mt-auto">
+    <footer className="border-t border-white/20 bg-gradient-to-br from-white/70 via-blue-50/50 to-purple-50/50 backdrop-blur-2xl mt-auto">
       <div className="container py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">

@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-export async function checkDailyUsage(maxUsage = 3) {
+export async function checkDailyUsage(maxUsage = 5) {
   // Get user session
   const session = await getServerSession(authOptions);
   

@@ -7,7 +7,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 export async function POST(req: Request) {
   try {
     // Check rate limit FIRST
-    const rateLimitCheck = await checkDailyUsage(3);
+    const rateLimitCheck = await checkDailyUsage(5);
     
     if (!rateLimitCheck.allowed) {
       return NextResponse.json({ 
