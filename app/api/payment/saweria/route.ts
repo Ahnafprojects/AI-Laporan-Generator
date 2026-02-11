@@ -38,32 +38,55 @@ export async function POST(req: Request) {
     // 1. Validasi Keamanan Sederhana (Opsional tapi bagus)
     // Bisa pakai query param ?secret=kode_rahasia di URL webhook nanti
 
-    // 2. Cek Nominal dengan fee Saweria berbagai metode pembayaran
-    // Base prices: 5k, 20k, 45k, 180k
-    // Fees: QRIS(0.7%), GoPay(2%), OVO(2.74%), LinkAja(1.69%), Admin Fee(5%)
-    const calculateWithFees = (baseAmount: number) => {
-      const fees = [0.007, 0.02, 0.0274, 0.0169, 0.05]; // 0.7%, 2%, 2.74%, 1.69%, 5%
-      return fees.map(fee => Math.round(baseAmount * (1 + fee)));
-    };
-    
-    const basePrices = [5000, 20000, 45000, 180000];
-    const validAmounts: number[] = [];
-    
-    basePrices.forEach(basePrice => {
-      validAmounts.push(basePrice); // Original price
-      validAmounts.push(...calculateWithFees(basePrice)); // With fees
-    });
-    
+    // 2. Cek nominal secara robust (exact fee + toleransi small unique code).
+    // Base plan:
+    // - Monthly: 5k / 20k
+    // - Yearly: 45k / 180k
+    // Fee references: QRIS(0.7%), GoPay(2%), OVO(2.74%), LinkAja(1.69%), Admin(5%)
+    const FEES = [0.007, 0.02, 0.0274, 0.0169, 0.05];
+    const EXACT_TOLERANCE = 500; // toleransi unique code / pembulatan kecil
+
+    const yearlyBases = [180000, 45000];
+    const monthlyBases = [20000, 5000];
+
+    const calculateWithFees = (baseAmount: number) =>
+      FEES.map((fee) => Math.round(baseAmount * (1 + fee)));
+
     const amountRaw = Number(data?.amount_raw || data?.amount || 0);
-    console.log(`Valid amounts: ${validAmounts.join(', ')}`);
     console.log(`Received amount: ${amountRaw}`);
-    
-    if (!validAmounts.includes(amountRaw)) {
+
+    const classifyPlan = (amount: number): "monthly" | "yearly" | null => {
+      const plans = [
+        ...monthlyBases.map((base) => ({ plan: "monthly" as const, base })),
+        ...yearlyBases.map((base) => ({ plan: "yearly" as const, base })),
+      ];
+
+      // 1) Cek exact-ish terhadap base + fee references
+      for (const item of plans) {
+        const candidates = [item.base, ...calculateWithFees(item.base)];
+        if (candidates.some((v) => Math.abs(v - amount) <= EXACT_TOLERANCE)) {
+          return item.plan;
+        }
+      }
+
+      // 2) Fallback: allow dynamic fee range jika provider mengubah fee tipis
+      for (const item of plans) {
+        const maxExtra = Math.max(1500, Math.round(item.base * 0.08)); // sampai +8% / min 1500
+        if (amount >= item.base && amount <= item.base + maxExtra) {
+          return item.plan;
+        }
+      }
+
+      return null;
+    };
+
+    const plan = classifyPlan(amountRaw);
+    if (!plan) {
       console.log(`Nominal ${amountRaw} tidak valid untuk PRO`);
       return NextResponse.json({ message: "Nominal tidak valid untuk upgrade PRO, terima kasih donasinya!" });
     }
 
-    console.log(`✅ Nominal ${amountRaw} valid untuk PRO upgrade`);
+    console.log(`✅ Nominal ${amountRaw} valid untuk PRO upgrade. Plan: ${plan}`);
 
     // 3. Ambil Email User
     // Strategi: Cek donator_email dulu. Kalau login saweria beda sama login app,
@@ -93,12 +116,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "User not found" });
     }
 
-    // Tentukan paket berdasarkan nominal base (tanpa fee)
-    // 180k/45k => yearly, 20k/5k => monthly
-    const yearlyBases = [180000, 45000];
-    const monthlyBases = [20000, 5000];
-    const allYearlyAmounts = yearlyBases.flatMap((b) => [b, ...calculateWithFees(b)]);
-    const isYearly = allYearlyAmounts.includes(amountRaw);
+    // Tentukan paket berdasarkan hasil klasifikasi nominal.
+    const isYearly = plan === "yearly";
 
     // Jika user masih aktif PRO, extend dari tanggal expired sekarang.
     const baseDate = user.proExpiresAt && new Date(user.proExpiresAt) > new Date()

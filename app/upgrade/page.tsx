@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Crown, Check, Zap, Gift, Loader2 } from "lucide-react";
-import Link from "next/link";
 
 export default function UpgradePage() {
   const { data: session, status } = useSession();
@@ -16,6 +15,9 @@ export default function UpgradePage() {
   const [isCodeApplied, setIsCodeApplied] = useState(false);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [paymentStatusMsg, setPaymentStatusMsg] = useState("");
+  const [pendingPayment, setPendingPayment] = useState(false);
+  const autoCheckTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoCheckAttemptRef = useRef(0);
   
   // Loading session
   if (status === "loading") {
@@ -50,10 +52,39 @@ export default function UpgradePage() {
   
   const SAWERIA_URL = "https://saweria.co/smartlabseepis";
 
-  const handleCheckPayment = async () => {
+  const stopAutoCheck = () => {
+    if (autoCheckTimerRef.current) {
+      clearInterval(autoCheckTimerRef.current);
+      autoCheckTimerRef.current = null;
+    }
+    autoCheckAttemptRef.current = 0;
+  };
+
+  const startAutoCheck = () => {
+    stopAutoCheck();
+    autoCheckAttemptRef.current = 0;
+    autoCheckTimerRef.current = setInterval(async () => {
+      autoCheckAttemptRef.current += 1;
+      // Stop after ~2 minutes (15 x 8s)
+      if (autoCheckAttemptRef.current > 15) {
+        stopAutoCheck();
+        return;
+      }
+      await handleCheckPayment(true);
+    }, 8000);
+  };
+
+  const handleOpenSaweria = () => {
+    setPendingPayment(true);
+    setPaymentStatusMsg("Tab Saweria dibuka. Setelah bayar, balik ke tab ini untuk auto-detect PRO.");
+    window.open(SAWERIA_URL, "_blank", "noopener,noreferrer");
+    startAutoCheck();
+  };
+
+  const handleCheckPayment = async (silent = false) => {
     if (!session?.user?.email) return;
     setIsCheckingPayment(true);
-    setPaymentStatusMsg("");
+    if (!silent) setPaymentStatusMsg("");
 
     try {
       const res = await fetch(`/api/payment/check-status?email=${encodeURIComponent(session.user.email)}`);
@@ -62,27 +93,61 @@ export default function UpgradePage() {
 
       if (data.isProActive) {
         setPaymentStatusMsg("Pembayaran terdeteksi. Akun kamu sudah PRO.");
+        setPendingPayment(false);
+        stopAutoCheck();
         router.refresh();
       } else {
-        setPaymentStatusMsg("Belum terdeteksi. Tunggu 1-5 menit lalu cek lagi.");
+        if (!silent) {
+          setPaymentStatusMsg("Belum terdeteksi. Tunggu 1-5 menit lalu cek lagi.");
+        }
       }
-    } catch (error: any) {
-      setPaymentStatusMsg(error.message || "Terjadi error saat mengecek status.");
+    } catch (error: unknown) {
+      if (!silent) {
+        setPaymentStatusMsg(error instanceof Error ? error.message : "Terjadi error saat mengecek status.");
+      }
     } finally {
       setIsCheckingPayment(false);
     }
   };
 
+  useEffect(() => {
+    if (!pendingPayment) return;
+
+    const onVisibleOrFocus = () => {
+      // Trigger immediate check when user returns from Saweria tab.
+      void handleCheckPayment(true);
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        onVisibleOrFocus();
+      }
+    };
+
+    window.addEventListener("focus", onVisibleOrFocus);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      window.removeEventListener("focus", onVisibleOrFocus);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [pendingPayment, session?.user?.email]);
+
+  useEffect(() => {
+    return () => stopAutoCheck();
+  }, []);
+
   const UpgradeButtonComponent = ({ price }: { price: number }) => (
     <div className="flex flex-col gap-3">
-      <Button asChild className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold border-0 w-full">
-        <Link href={SAWERIA_URL} target="_blank">
-          <Crown className="mr-2 h-4 w-4" />
-          Upgrade PRO (via Saweria)
-        </Link>
+      <Button
+        onClick={handleOpenSaweria}
+        className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold border-0 w-full"
+      >
+        <Crown className="mr-2 h-4 w-4" />
+        Upgrade PRO (via Saweria)
       </Button>
 
-      <Button onClick={handleCheckPayment} variant="outline" className="w-full" disabled={isCheckingPayment}>
+      <Button onClick={() => void handleCheckPayment()} variant="outline" className="w-full" disabled={isCheckingPayment}>
         {isCheckingPayment ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
