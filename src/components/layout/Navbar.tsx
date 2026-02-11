@@ -18,11 +18,12 @@ import {
 export default function Navbar() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const isProActive = Boolean(
+  const sessionIsProActive = Boolean(
     session?.user &&
       "isProActive" in session.user &&
       (session.user as { isProActive?: boolean }).isProActive
   );
+  const [isProActive, setIsProActive] = useState(sessionIsProActive);
   const [scrolled, setScrolled] = useState(false);
 
   // Cek apakah user ini admin
@@ -46,6 +47,36 @@ export default function Navbar() {
     router.prefetch("/upgrade");
     if (isAdmin) router.prefetch("/admin");
   }, [router, status, isAdmin]);
+
+  useEffect(() => {
+    if (status !== "authenticated") {
+      setIsProActive(false);
+      return;
+    }
+
+    let isMounted = true;
+    const syncProStatus = async () => {
+      try {
+        const res = await fetch("/api/payment/check-status", { cache: "no-store" });
+        const data = await res.json();
+        if (!res.ok) return;
+        if (isMounted) {
+          setIsProActive(Boolean(data?.isProActive));
+        }
+      } catch {
+        if (isMounted) {
+          setIsProActive(sessionIsProActive);
+        }
+      }
+    };
+
+    setIsProActive(sessionIsProActive);
+    void syncProStatus();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [status, sessionIsProActive]);
 
   return (
     <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4 px-4'}`}>
