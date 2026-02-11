@@ -7,7 +7,6 @@ import { Copy, RefreshCw, Palette, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { useToolUsage } from "@/hooks/useToolUsage";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ColorConverterPage() {
@@ -17,9 +16,6 @@ export default function ColorConverterPage() {
     const [hex, setHex] = useState("#6366f1");
     const [rgb, setRgb] = useState({ r: 99, g: 102, b: 241 });
     const [hsl, setHsl] = useState({ h: 239, s: 84, l: 67 });
-    const { isLimited, incrementUsage, remaining } = useToolUsage("color-converter");
-
-    const [activeTab, setActiveTab] = useState<"hex" | "rgb" | "hsl">("hex");
     const [copied, setCopied] = useState<string | null>(null);
 
     // Conversion Logic
@@ -83,12 +79,6 @@ export default function ColorConverterPage() {
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col">
             {/* Limit Indicator */}
-            <div className="fixed top-24 right-4 z-50">
-                <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
-                    <span>Daily Limit:</span>
-                    <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
-                </div>
-            </div>
             {/* Background Blobs */}
             <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl animate-blob"></div>

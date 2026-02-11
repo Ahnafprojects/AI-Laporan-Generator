@@ -1,14 +1,10 @@
-import { getServerSession } from "next-auth";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Zap, FileText, ShieldCheck, ArrowRight, Star, Mail, Wand2, Link2, QrCode, Image, FileImage, Eraser, PenTool, Download, Merge, BadgeCheck, Users, AlignLeft, Lock, Braces, Receipt, Type, Timer, ArrowRightLeft, GitCompare, FileType, Sparkles } from "lucide-react";
 import Link from "next/link";
-import Navbar from "@/components/layout/Navbar";
 import ToolsSection from "@/components/home/ToolsSection";
 
 
-export default async function Home() {
-  const session = await getServerSession();
-
+export default function Home() {
   return (
     <div className="min-h-screen relative overflow-hidden bg-slate-50 dark:bg-slate-950">
 
@@ -18,8 +14,6 @@ export default async function Home() {
         <div className="liquid-blob bg-yellow-300 top-0 right-0 animation-delay-2000"></div>
         <div className="liquid-blob bg-pink-400 bottom-0 left-20 animation-delay-4000"></div>
       </div>
-
-      <Navbar />
 
       {/* HERO SECTION */}
       <section className="relative pt-32 pb-20 px-4 md:px-6">
@@ -46,7 +40,7 @@ export default async function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4 animate-in fade-in slide-in-from-bottom-14 duration-1000 delay-300">
-                <Link href={session ? "/create" : "/login"}>
+                <Link href="/create">
                   <Button size="lg" className="h-14 px-8 text-lg rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-xl shadow-indigo-200 dark:shadow-indigo-900 transition-all hover:scale-105">
                     <Wand2 className="mr-2 h-5 w-5" /> Mulai Generate
                   </Button>
@@ -191,7 +185,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <ToolsSection isLoggedIn={!!session} />
+      <ToolsSection />
 
     </div>
   );

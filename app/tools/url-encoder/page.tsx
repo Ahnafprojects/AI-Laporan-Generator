@@ -7,7 +7,6 @@ import { ArrowLeftRight, Copy, Check, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useToolUsage } from "@/hooks/useToolUsage";
 
 export default function UrlEncoder() {
     const { toast } = useToast();
@@ -15,8 +14,6 @@ export default function UrlEncoder() {
     const [output, setOutput] = useState("");
     const [mode, setMode] = useState<"encode" | "decode">("encode");
     const [copied, setCopied] = useState(false);
-    const { isLimited, incrementUsage, remaining } = useToolUsage("url-encoder");
-
     const handleConvert = (currentInput: string, currentMode: "encode" | "decode") => {
         try {
             if (!currentInput) {
@@ -49,9 +46,7 @@ export default function UrlEncoder() {
     };
 
     const copyToClipboard = () => {
-        if (!output) return;
-        if (!incrementUsage()) return; // Limit usage on copy
-        navigator.clipboard.writeText(output);
+        if (!output) return;        navigator.clipboard.writeText(output);
         setCopied(true);
         toast({ title: "Copied!", description: "URL result copied." });
         setTimeout(() => setCopied(false), 2000);
@@ -66,12 +61,6 @@ export default function UrlEncoder() {
             </div>
 
             {/* Limit Indicator */}
-            <div className="fixed top-24 right-4 z-50">
-                <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
-                    <span>Daily Limit:</span>
-                    <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
-                </div>
-            </div>
 
             <Navbar />
 

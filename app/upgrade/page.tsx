@@ -2,16 +2,20 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Crown, Check, Zap, Gift, ExternalLink } from "lucide-react";
+import { Crown, Check, Zap, Gift, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function UpgradePage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [redeemCode, setRedeemCode] = useState("");
   const [isCodeApplied, setIsCodeApplied] = useState(false);
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  const [paymentStatusMsg, setPaymentStatusMsg] = useState("");
   
   // Loading session
   if (status === "loading") {
@@ -46,6 +50,29 @@ export default function UpgradePage() {
   
   const SAWERIA_URL = "https://saweria.co/smartlabseepis";
 
+  const handleCheckPayment = async () => {
+    if (!session?.user?.email) return;
+    setIsCheckingPayment(true);
+    setPaymentStatusMsg("");
+
+    try {
+      const res = await fetch(`/api/payment/check-status?email=${encodeURIComponent(session.user.email)}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal mengecek status pembayaran");
+
+      if (data.isProActive) {
+        setPaymentStatusMsg("Pembayaran terdeteksi. Akun kamu sudah PRO.");
+        router.refresh();
+      } else {
+        setPaymentStatusMsg("Belum terdeteksi. Tunggu 1-5 menit lalu cek lagi.");
+      }
+    } catch (error: any) {
+      setPaymentStatusMsg(error.message || "Terjadi error saat mengecek status.");
+    } finally {
+      setIsCheckingPayment(false);
+    }
+  };
+
   const UpgradeButtonComponent = ({ price }: { price: number }) => (
     <div className="flex flex-col gap-3">
       <Button asChild className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold border-0 w-full">
@@ -54,6 +81,23 @@ export default function UpgradePage() {
           Upgrade PRO (via Saweria)
         </Link>
       </Button>
+
+      <Button onClick={handleCheckPayment} variant="outline" className="w-full" disabled={isCheckingPayment}>
+        {isCheckingPayment ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Mengecek status...
+          </>
+        ) : (
+          "Saya sudah bayar, cek status"
+        )}
+      </Button>
+
+      {paymentStatusMsg && (
+        <div className="text-xs rounded border bg-white p-2 text-slate-600">
+          {paymentStatusMsg}
+        </div>
+      )}
       
       {/* Instruksi Penting */}
       <div className="text-xs text-muted-foreground bg-slate-100 p-2 rounded border border-slate-200">

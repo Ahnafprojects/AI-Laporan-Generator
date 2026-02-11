@@ -1,176 +1,191 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, FileText, Activity, Crown, DollarSign, Clock, TrendingUp, Ticket } from "lucide-react";
 import AdminTables from "@/components/admin/AdminTables";
 
 export const dynamic = 'force-dynamic'; // Agar data selalu fresh
+const ADMIN_TABLE_LIMIT = 25;
 
 export default async function AdminDashboard() {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   if (!session || session.user?.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
     redirect("/");
   }
 
-  // DATA STATISTIK
-  const totalUsers = await prisma.user.count();
-  const totalReports = await prisma.report.count();
-  
-  // PRO USER STATISTICS
-  const proUsersCount = await prisma.user.count({
-    where: {
-      AND: [
-        { isPro: true },
-        { proExpiresAt: { gte: new Date() } }
-      ]
-    }
-  });
-  
-  const expiredProCount = await prisma.user.count({
-    where: {
-      AND: [
-        { isPro: false },
-        { proExpiresAt: { lt: new Date() } }
-      ]
-    }
-  });
+  const now = new Date();
+  const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
 
-  // Revenue dari transaksi PRO (hanya yang sukses)
-  const totalRevenue = await prisma.transaction.aggregate({
-    _sum: { amount: true },
-    where: { status: "settlement" }
-  });
-
-  // PRO users yang akan expire dalam 7 hari
-  const expiringProUsers = await prisma.user.count({
-    where: {
-      AND: [
-        { proExpiresAt: { gte: new Date() } },
-        { proExpiresAt: { lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) } }
-      ]
-    }
-  });
-
-  // AI TOOLS USAGE STATISTICS
-  const totalAIUsage = await prisma.dailyUsage.aggregate({
-    _sum: { usageCount: true }
-  });
-
-  const todayAIUsage = await prisma.dailyUsage.aggregate({
-    _sum: { usageCount: true },
-    where: {
-      date: {
-        gte: new Date(new Date().setHours(0, 0, 0, 0))
+  // Jalankan query paralel agar TTFB admin lebih cepat.
+  const [
+    totalUsers,
+    totalReports,
+    proUsersCount,
+    expiredProCount,
+    totalRevenue,
+    expiringProUsers,
+    totalAIUsage,
+    todayAIUsage,
+    redeemCodeUsage,
+    monthlySubscribers,
+    yearlySubscribers,
+    monthlyRevenue,
+    yearlyRevenue,
+    users,
+    reports,
+    feedbacks,
+    topUsageByUser,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.report.count(),
+    prisma.user.count({
+      where: {
+        AND: [
+          { isPro: true },
+          { proExpiresAt: { gte: now } }
+        ]
       }
-    }
-  });
-
-  // Top AI users
-  const topAIUsers = await prisma.user.findMany({
-    select: {
-      email: true,
-      isPro: true,
-      dailyUsages: {
-        select: {
-          usageCount: true
+    }),
+    prisma.user.count({
+      where: {
+        AND: [
+          { isPro: false },
+          { proExpiresAt: { lt: now } }
+        ]
+      }
+    }),
+    prisma.transaction.aggregate({
+      _sum: { amount: true },
+      where: { status: "settlement" }
+    }),
+    prisma.user.count({
+      where: {
+        AND: [
+          { proExpiresAt: { gte: now } },
+          { proExpiresAt: { lte: weekFromNow } }
+        ]
+      }
+    }),
+    prisma.dailyUsage.aggregate({
+      _sum: { usageCount: true }
+    }),
+    prisma.dailyUsage.aggregate({
+      _sum: { usageCount: true },
+      where: {
+        date: { gte: todayStart }
+      }
+    }),
+    prisma.transaction.count({
+      where: {
+        orderId: { startsWith: "REDEEM_" },
+        status: "settlement"
+      }
+    }),
+    prisma.transaction.count({
+      where: {
+        AND: [
+          { orderId: { contains: "PRO-MONTHLY" } },
+          { status: "settlement" }
+        ]
+      }
+    }),
+    prisma.transaction.count({
+      where: {
+        AND: [
+          { orderId: { contains: "PRO-YEARLY" } },
+          { status: "settlement" }
+        ]
+      }
+    }),
+    prisma.transaction.aggregate({
+      _sum: { amount: true },
+      where: {
+        AND: [
+          { orderId: { contains: "PRO-MONTHLY" } },
+          { status: "settlement" }
+        ]
+      }
+    }),
+    prisma.transaction.aggregate({
+      _sum: { amount: true },
+      where: {
+        AND: [
+          { orderId: { contains: "PRO-YEARLY" } },
+          { status: "settlement" }
+        ]
+      }
+    }),
+    prisma.user.findMany({
+      take: ADMIN_TABLE_LIMIT,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        nrp: true,
+        kelas: true,
+        createdAt: true,
+        isPro: true,
+        proExpiresAt: true,
+        _count: { select: { reports: true } },
+      },
+    }),
+    prisma.report.findMany({
+      take: ADMIN_TABLE_LIMIT,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        subject: true,
+        createdAt: true,
+        user: {
+          select: { name: true, nrp: true }
         }
       }
-    },
-    take: 10
-  });
-
-  // Calculate total AI usage per user
-  const topAIUsersWithTotal = topAIUsers.map(user => ({
-    email: user.email,
-    isPro: user.isPro,
-    totalUsage: user.dailyUsages.reduce((sum, usage) => sum + usage.usageCount, 0)
-  })).filter(user => user.totalUsage > 0)
-    .sort((a, b) => b.totalUsage - a.totalUsage)
-    .slice(0, 5);
-
-  // Users yang menggunakan redeem code (assuming we track this in transactions)
-  const redeemCodeUsage = await prisma.transaction.count({
-    where: { 
-      orderId: { startsWith: "REDEEM_" },
-      status: "settlement"
-    }
-  });
-
-  // Monthly vs Yearly breakdown (berdasarkan transaction history)
-  const monthlySubscribers = await prisma.transaction.count({
-    where: {
-      AND: [
-        { orderId: { contains: "PRO-MONTHLY" } },
-        { status: "settlement" }
-      ]
-    }
-  });
-
-  const yearlySubscribers = await prisma.transaction.count({
-    where: {
-      AND: [
-        { orderId: { contains: "PRO-YEARLY" } },
-        { status: "settlement" }
-      ]
-    }
-  });
-
-  // Revenue breakdown
-  const monthlyRevenue = await prisma.transaction.aggregate({
-    _sum: { amount: true },
-    where: {
-      AND: [
-        { orderId: { contains: "PRO-MONTHLY" } },
-        { status: "settlement" }
-      ]
-    }
-  });
-
-  const yearlyRevenue = await prisma.transaction.aggregate({
-    _sum: { amount: true },
-    where: {
-      AND: [
-        { orderId: { contains: "PRO-YEARLY" } },
-        { status: "settlement" }
-      ]
-    }
-  });
-  
-  // 1. DATA USER (Ambil 50 terbaru dengan PRO status)
-  const users = await prisma.user.findMany({
-    take: 50,
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      nrp: true,
-      kelas: true,
-      createdAt: true,
-      isPro: true,
-      proExpiresAt: true,
-      _count: { select: { reports: true } },
-    },
-  });
-
-  // 2. DATA LAPORAN (Ambil 50 terbaru)
-  const reports = await prisma.report.findMany({
-    take: 50,
-    orderBy: { createdAt: "desc" },
-    include: {
-      user: {
-        select: { name: true, nrp: true }
+    }),
+    prisma.feedback.findMany({
+      take: ADMIN_TABLE_LIMIT,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        rating: true,
+        message: true,
+        email: true,
+        createdAt: true,
       }
-    }
-  });
+    }),
+    prisma.dailyUsage.groupBy({
+      by: ["userId"],
+      _sum: { usageCount: true },
+      orderBy: { _sum: { usageCount: "desc" } },
+      take: 5,
+    }),
+  ]);
 
-  // 3. DATA FEEDBACK (Ambil 50 terbaru)
-  const feedbacks = await prisma.feedback.findMany({
-    take: 50,
-    orderBy: { createdAt: "desc" },
-  });
+  const topUserIds = topUsageByUser.map((entry) => entry.userId);
+  const topUserMeta = topUserIds.length
+    ? await prisma.user.findMany({
+        where: { id: { in: topUserIds } },
+        select: { id: true, email: true, isPro: true },
+      })
+    : [];
+  const topUserMap = new Map(topUserMeta.map((u) => [u.id, u]));
+  const topAIUsersWithTotal = topUsageByUser
+    .map((entry) => {
+      const meta = topUserMap.get(entry.userId);
+      if (!meta) return null;
+      return {
+        email: meta.email,
+        isPro: meta.isPro,
+        totalUsage: entry._sum.usageCount || 0,
+      };
+    })
+    .filter((user): user is { email: string; isPro: boolean; totalUsage: number } => !!user && user.totalUsage > 0);
 
   return (
     <div className="container py-10 min-h-screen">
@@ -386,7 +401,7 @@ export default async function AdminDashboard() {
                 <span className="font-semibold text-purple-600">{totalAIUsage._sum.usageCount || 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Today's Usage:</span>
+                <span className="text-sm text-muted-foreground">Today Usage:</span>
                 <span className="font-semibold text-blue-600">{todayAIUsage._sum.usageCount || 0}</span>
               </div>
               <div className="flex justify-between border-t pt-2">
@@ -408,7 +423,7 @@ export default async function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {topAIUsersWithTotal.length > 0 ? topAIUsersWithTotal.map((user, index) => (
+              {topAIUsersWithTotal.length > 0 ? topAIUsersWithTotal.map((user) => (
                 <div key={user.email} className="flex justify-between text-sm">
                   <span className="text-muted-foreground truncate max-w-[200px]">
                     {user.email} {user.isPro && '👑'}

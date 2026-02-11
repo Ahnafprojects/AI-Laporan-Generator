@@ -5,10 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Wand2, Plus, Trash2, FileText, Image as ImageIcon } from "lucide-react";
-import { useToolUsage } from "@/hooks/useToolUsage";
 
 export default function CVBuilderPage() {
-  const { isLimited, incrementUsage, remaining } = useToolUsage("cv-builder");
   // --- STATE DATA CV ---
   const [personal, setPersonal] = useState({
     name: "NAMA LENGKAP",
@@ -196,8 +194,6 @@ export default function CVBuilderPage() {
   const componentRef = useRef<HTMLDivElement>(null);
 
   const exportToWord = () => {
-    if (!incrementUsage()) return; // Check limit
-
     // Prepare data untuk HTML generator
     const cvData = {
       personal: personal,
@@ -601,12 +597,6 @@ export default function CVBuilderPage() {
         </div>
       </div>
       {/* Limit Indicator */}
-      <div className="fixed top-24 right-4 z-50">
-        <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
-          <span>Daily Limit:</span>
-          <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
-        </div>
-      </div>
     </div>
   );
 }

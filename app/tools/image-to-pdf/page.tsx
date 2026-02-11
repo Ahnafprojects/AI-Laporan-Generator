@@ -3,16 +3,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileText, Upload, Trash2, Download, Image as ImageIcon, Plus } from "lucide-react";
-import jsPDF from "jspdf";
-import { useToolUsage } from "@/hooks/useToolUsage";
-import { useToast } from "@/hooks/use-toast";
 
 export default function ImageToPdfPage() {
   const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [orientation, setOrientation] = useState<"p" | "l">("p"); // Portrait / Landscape
-  const { isLimited, incrementUsage, remaining } = useToolUsage("image-to-pdf");
-  const { toast } = useToast();
 
   // --- HANDLER UPLOAD ---
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,12 +26,12 @@ export default function ImageToPdfPage() {
   };
 
   // --- GENERATE PDF LOGIC ---
-  const generatePDF = () => {
+  const generatePDF = async () => {
     if (images.length === 0) return;
-    if (!incrementUsage()) return; // Check limit
     setLoading(true);
 
     try {
+      const jsPDF = (await import("jspdf")).default;
       // A4 Size in mm
       const pdf = new jsPDF(orientation, "mm", "a4");
       const pageWidth = pdf.internal.pageSize.getWidth();
@@ -187,12 +182,6 @@ export default function ImageToPdfPage() {
       )}
 
       {/* Limit Indicator */}
-      <div className="fixed top-24 right-4 z-50">
-        <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
-          <span>Daily Limit:</span>
-          <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
-        </div>
-      </div>
     </div>
   );
 }

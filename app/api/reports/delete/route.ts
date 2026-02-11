@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
 
 export async function DELETE(req: Request) {
   try {
     // 1. Check session
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     
     if (!session || !session.user?.email) {
       return NextResponse.json(
@@ -27,7 +28,7 @@ export async function DELETE(req: Request) {
     // 3. Verify report belongs to the user
     const report = await prisma.report.findUnique({
       where: { id: reportId },
-      include: { user: true },
+      select: { id: true, user: { select: { email: true } } },
     });
 
     if (!report) {
@@ -37,7 +38,7 @@ export async function DELETE(req: Request) {
       );
     }
 
-    if (report.user.email !== session.user.email) {
+    if (!report.user || report.user.email !== session.user.email) {
       return NextResponse.json(
         { error: "Forbidden: You can only delete your own reports" },
         { status: 403 }

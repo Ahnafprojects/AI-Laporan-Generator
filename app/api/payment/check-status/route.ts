@@ -1,14 +1,24 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
 
 // Check user PRO status
 export async function GET(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
     const { searchParams } = new URL(req.url);
-    const email = searchParams.get('email');
+    const emailFromQuery = searchParams.get('email');
+    const emailFromSession = session?.user?.email || null;
+    const email = (emailFromQuery || emailFromSession || "").toLowerCase();
 
     if (!email) {
       return NextResponse.json({ error: "Email required" }, { status: 400 });
+    }
+
+    // Jika user login, batasi agar tidak bisa cek email user lain.
+    if (emailFromSession && emailFromQuery && emailFromSession.toLowerCase() !== email) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const user = await prisma.user.findUnique({

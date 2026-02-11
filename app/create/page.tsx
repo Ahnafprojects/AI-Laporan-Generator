@@ -1,4 +1,18 @@
-import ReportForm from "@/components/forms/ReportForm";
+import dynamic from "next/dynamic";
+
+const ReportForm = dynamic(() => import("@/components/forms/ReportForm"), {
+  loading: () => (
+    <div className="mx-auto max-w-3xl rounded-2xl border bg-white/70 p-8">
+      <div className="h-6 w-48 animate-pulse rounded bg-gray-200 mb-4" />
+      <div className="space-y-3">
+        <div className="h-10 animate-pulse rounded bg-gray-100" />
+        <div className="h-10 animate-pulse rounded bg-gray-100" />
+        <div className="h-10 animate-pulse rounded bg-gray-100" />
+        <div className="h-32 animate-pulse rounded bg-gray-100" />
+      </div>
+    </div>
+  ),
+});
 
 export default function CreatePage() {
   return (

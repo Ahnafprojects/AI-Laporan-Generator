@@ -6,7 +6,6 @@ import Footer from "@/components/layout/Footer";
 import { Upload, Image as ImageIcon, Download, ArrowRight, RefreshCw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { useToolUsage } from "@/hooks/useToolUsage"; // Import hook
 import { useToast } from "@/hooks/use-toast";
 
 export default function ImageCompressorPage() {
@@ -17,8 +16,6 @@ export default function ImageCompressorPage() {
   const [previewOriginal, setPreviewOriginal] = useState<string | null>(null);
   const [previewCompressed, setPreviewCompressed] = useState<string | null>(null);
   const [compressedFile, setCompressedFile] = useState<Blob | null>(null);
-  const [activeTab, setActiveTab] = useState<"original" | "compressed">("compressed");
-  const { isLimited, incrementUsage, remaining } = useToolUsage("image-compressor");
   const [quality, setQuality] = useState([80]);
   const [isCompressing, setIsCompressing] = useState(false);
 
@@ -70,14 +67,6 @@ export default function ImageCompressorPage() {
       const img = new Image();
       img.src = event.target?.result as string;
       img.onload = () => {
-        // Check limit before compressing
-        if (!incrementUsage()) {
-          setCompressedFile(null); // Clear result if limit hit
-          setIsCompressing(false); // Ensure compressing state is reset
-          toast({ variant: "destructive", title: "Daily Limit Reached", description: "You have reached your daily usage limit for this tool." });
-          return;
-        }
-
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
@@ -136,12 +125,6 @@ export default function ImageCompressorPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 relative overflow-hidden flex flex-col">
       {/* Limit Indicator */}
-      <div className="fixed top-24 right-4 z-50">
-        <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
-          <span>Daily Limit:</span>
-          <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
-        </div>
-      </div>
       {/* Background Blobs */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-pink-400/20 rounded-full blur-3xl animate-blob"></div>

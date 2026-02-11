@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, ShieldCheck, History, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -13,9 +13,22 @@ import PasswordForm from "@/components/profile/PasswordForm";
 import HistoryTable from "@/components/profile/HistoryTable";
 import RedeemForm from "@/components/payment/RedeemForm";
 
-export default async function ProfilePage() {
+type ProfileTab = "profile" | "membership" | "security" | "history";
+
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ tab?: string }>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const tabFromQuery = resolvedSearchParams?.tab;
+  const validTabs: ProfileTab[] = ["profile", "membership", "security", "history"];
+  const defaultTab: ProfileTab = validTabs.includes(tabFromQuery as ProfileTab)
+    ? (tabFromQuery as ProfileTab)
+    : "profile";
+
   // 1. Cek Session & Ambil Data User
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   if (!session || !session.user?.email) {
     redirect("/login");
@@ -24,10 +37,16 @@ export default async function ProfilePage() {
   // 2. Ambil data User lengkap dari Database
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    include: {
-      reports: {
-        orderBy: { createdAt: "desc" }, // Urutkan laporan dari yang terbaru
-      },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      nrp: true,
+      kelas: true,
+      prodi: true,
+      departemen: true,
+      institusi: true,
+      proExpiresAt: true,
     },
   });
 
@@ -58,7 +77,7 @@ export default async function ProfilePage() {
           </Link>
         </div>
 
-        <Tabs defaultValue="profile" className="space-y-6">
+        <Tabs defaultValue={defaultTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 max-w-2xl bg-white/40 backdrop-blur-md p-1 rounded-xl border border-white/20">
             <TabsTrigger value="profile" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-violet-700">
               <User className="mr-2 h-4 w-4" /> Biodata
@@ -171,7 +190,7 @@ export default async function ProfilePage() {
                 <h2 className="text-xl font-bold text-gray-900">Riwayat Laporan</h2>
                 <p className="text-sm text-gray-500">Daftar semua laporan yang pernah Anda buat.</p>
               </div>
-              <HistoryTable reports={user.reports} />
+              <HistoryTable />
             </div>
           </TabsContent>
         </Tabs>

@@ -7,17 +7,14 @@ import { Fingerprint, Copy, RefreshCw, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { useToolUsage } from "@/hooks/useToolUsage";
 
 export default function UuidGenerator() {
     const { toast } = useToast();
     const [uuids, setUuids] = useState<string[]>([]);
     const [count, setCount] = useState([5]);
-    const [version, setVersion] = useState<"v1" | "v4">("v4");
-    const { isLimited, incrementUsage, remaining } = useToolUsage("uuid-generator"); // Simplified to v4 mostly
+    // Simplified to v4 mostly
 
     const generateUUID = () => {
-        if (!incrementUsage()) return; // Limit usage on generate
         // Basic v4 implementation using crypto API
         const newIds = Array.from({ length: count[0] }, () => crypto.randomUUID());
         setUuids(newIds);
@@ -48,12 +45,6 @@ export default function UuidGenerator() {
             </div>
 
             {/* Limit Indicator */}
-            <div className="fixed top-24 right-4 z-50">
-                <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
-                    <span>Daily Limit:</span>
-                    <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
-                </div>
-            </div>
 
             <Navbar />
 

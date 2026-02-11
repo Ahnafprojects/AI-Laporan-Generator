@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-export async function checkDailyUsage(maxUsage = 5) {
+export async function checkDailyUsage(maxUsage?: number) {
   // Get user session
   const session = await getServerSession(authOptions);
   
@@ -43,25 +43,26 @@ export async function checkDailyUsage(maxUsage = 5) {
   });
 
   const currentUsage = dailyUsage?.usageCount || 0;
+
+  // Status PRO aktif berdasarkan expiry date.
+  const isPro = !!(user.proExpiresAt && user.proExpiresAt > new Date());
+  const effectiveMaxUsage = maxUsage ?? (isPro ? 50 : 3);
   
-  // Check if user is Pro (unlimited usage)
-  const isPro = user.isPro && user.proExpiresAt && user.proExpiresAt > new Date();
-  
-  if (!isPro && currentUsage >= maxUsage) {
+  if (currentUsage >= effectiveMaxUsage) {
     return {
       allowed: false,
-      error: `Daily AI usage limit reached (${maxUsage}/day). Upgrade to Pro for unlimited access!`,
+      error: `Daily AI usage limit reached (${effectiveMaxUsage}/day). Upgrade to Pro for unlimited access!`,
       status: 429,
       currentUsage,
-      maxUsage,
-      isPro: false
+      maxUsage: effectiveMaxUsage,
+      isPro
     };
   }
 
   return {
     allowed: true,
     currentUsage,
-    maxUsage: isPro ? "unlimited" : maxUsage,
+    maxUsage: effectiveMaxUsage,
     isPro,
     userId: user.id
   };

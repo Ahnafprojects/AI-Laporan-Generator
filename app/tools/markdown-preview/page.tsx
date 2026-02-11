@@ -7,7 +7,6 @@ import { FileText, Eye, Code, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useToolUsage } from "@/hooks/useToolUsage";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -15,10 +14,7 @@ export default function MarkdownPreview() {
     const { toast } = useToast();
     const [markdown, setMarkdown] = useState("# Hello World\n\n**Start typing** markdown here...\n\n- Item 1\n- Item 2\n\n```js\nconsole.log('Code block');\n```");
     const [copied, setCopied] = useState(false);
-    const { isLimited, incrementUsage, remaining } = useToolUsage("markdown-preview");
-
     const copyToClipboard = () => {
-        if (!incrementUsage()) return; // Limit usage on copy
         navigator.clipboard.writeText(markdown);
         setCopied(true);
         toast({ title: "Copied!", description: "Markdown copied to clipboard." });
@@ -34,12 +30,6 @@ export default function MarkdownPreview() {
             </div>
 
             {/* Limit Indicator */}
-            <div className="fixed top-24 right-4 z-50">
-                <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
-                    <span>Daily Limit:</span>
-                    <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
-                </div>
-            </div>
 
             <Navbar />
 

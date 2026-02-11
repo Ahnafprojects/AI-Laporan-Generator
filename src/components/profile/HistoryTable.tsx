@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { FileText, ArrowRight, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -20,8 +19,9 @@ interface Report {
   createdAt: Date;
 }
 
-export default function HistoryTable({ reports: initialReports }: { reports: Report[] }) {
+export default function HistoryTable({ reports: initialReports = [] }: { reports?: Report[] }) {
   const [reports, setReports] = useState(initialReports);
+  const [isLoadingReports, setIsLoadingReports] = useState(initialReports.length === 0);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
@@ -33,6 +33,39 @@ export default function HistoryTable({ reports: initialReports }: { reports: Rep
   const { toast } = useToast();
 
   const itemsPerPage = 5;
+
+  useEffect(() => {
+    // If server already provided reports, skip client fetch.
+    if (initialReports.length > 0) {
+      setIsLoadingReports(false);
+      return;
+    }
+
+    const fetchReports = async () => {
+      setIsLoadingReports(true);
+      try {
+        const response = await fetch("/api/reports/list");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Gagal memuat riwayat laporan");
+        }
+
+        setReports(data.reports || []);
+      } catch (error) {
+        console.error("Fetch reports error:", error);
+        toast({
+          variant: "destructive",
+          title: "Gagal memuat riwayat",
+          description: error instanceof Error ? error.message : "Terjadi kesalahan.",
+        });
+      } finally {
+        setIsLoadingReports(false);
+      }
+    };
+
+    fetchReports();
+  }, [initialReports.length, toast]);
 
   // Filter reports berdasarkan search query
   const filteredReports = useMemo(() => {
@@ -67,7 +100,7 @@ export default function HistoryTable({ reports: initialReports }: { reports: Rep
   };
 
   const confirmDelete = async () => {
-    const { reportId, reportTitle } = deleteDialog;
+    const { reportId } = deleteDialog;
     setIsDeleting(reportId);
 
     try {
@@ -110,6 +143,16 @@ export default function HistoryTable({ reports: initialReports }: { reports: Rep
       setDeleteDialog({ isOpen: false, reportId: '', reportTitle: '' });
     }
   };
+
+  if (isLoadingReports) {
+    return (
+      <div className="space-y-3">
+        <div className="h-10 w-full rounded-md bg-slate-100 animate-pulse" />
+        <div className="h-24 w-full rounded-xl bg-slate-100 animate-pulse" />
+        <div className="h-24 w-full rounded-xl bg-slate-100 animate-pulse" />
+      </div>
+    );
+  }
 
   if (reports.length === 0) {
     return (

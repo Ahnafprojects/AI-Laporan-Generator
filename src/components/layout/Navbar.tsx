@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { Sparkles, LogOut, User, Users, Crown } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Sparkles, LogOut, User, Users, Crown, Wrench, History, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,8 +16,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
+  const router = useRouter();
   const { data: session, status } = useSession();
-  const [isProActive, setIsProActive] = useState(false);
+  const isProActive = Boolean(
+    session?.user &&
+      "isProActive" in session.user &&
+      (session.user as { isProActive?: boolean }).isProActive
+  );
   const [scrolled, setScrolled] = useState(false);
 
   // Cek apakah user ini admin
@@ -31,26 +37,15 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Fetch PRO status
   useEffect(() => {
-    const fetchProStatus = async () => {
-      if (session?.user?.email) {
-        try {
-          const response = await fetch('/api/user/pro-status');
-          if (response.ok) {
-            const data = await response.json();
-            setIsProActive(data.isProActive);
-          }
-        } catch (error) {
-          console.error('Failed to fetch PRO status:', error);
-        }
-      }
-    };
+    if (status !== "authenticated") return;
 
-    if (status === 'authenticated') {
-      fetchProStatus();
-    }
-  }, [session, status]);
+    router.prefetch("/create");
+    router.prefetch("/profile?tab=profile");
+    router.prefetch("/profile?tab=history");
+    router.prefetch("/upgrade");
+    if (isAdmin) router.prefetch("/admin");
+  }, [router, status, isAdmin]);
 
   return (
     <div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4 px-4'}`}>
@@ -72,7 +67,6 @@ export default function Navbar() {
 
           {/* Menu Kanan */}
           <div className="flex items-center gap-4">
-
             {/* LOGIC TOMBOL LOGIN / USER */}
             {status === "loading" ? (
               <div className="h-9 w-24 bg-gray-200/50 animate-pulse rounded-full" />
@@ -113,10 +107,22 @@ export default function Navbar() {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-gray-200/50" />
 
-                    <Link href="/profile">
+                    <Link href="/profile?tab=profile">
                       <DropdownMenuItem className="cursor-pointer rounded-lg focus:bg-violet-50 focus:text-violet-700 p-2.5">
-                        <User className="mr-2 h-4 w-4" />
-                        Profil & Riwayat
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link href="/profile?tab=history">
+                      <DropdownMenuItem className="cursor-pointer rounded-lg focus:bg-violet-50 focus:text-violet-700 p-2.5">
+                        <History className="mr-2 h-4 w-4" />
+                        Histori
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link href="/#tools">
+                      <DropdownMenuItem className="cursor-pointer rounded-lg focus:bg-violet-50 focus:text-violet-700 p-2.5">
+                        <Wrench className="mr-2 h-4 w-4" />
+                        Tools
                       </DropdownMenuItem>
                     </Link>
 

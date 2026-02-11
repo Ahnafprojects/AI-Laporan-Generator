@@ -3,7 +3,25 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
-    const data = await req.json();
+    const contentType = req.headers.get("content-type") || "";
+    const rawBody = await req.text();
+
+    let parsedBody: any = {};
+    if (contentType.includes("application/json")) {
+      parsedBody = JSON.parse(rawBody || "{}");
+    } else if (contentType.includes("application/x-www-form-urlencoded")) {
+      const form = new URLSearchParams(rawBody);
+      parsedBody = Object.fromEntries(form.entries());
+    } else {
+      try {
+        parsedBody = JSON.parse(rawBody || "{}");
+      } catch {
+        parsedBody = {};
+      }
+    }
+
+    // Beberapa provider webhook membungkus payload pada key `data`.
+    const data = parsedBody?.data && typeof parsedBody.data === "object" ? parsedBody.data : parsedBody;
 
     // Data dari Saweria biasanya bentuknya begini:
     // {
@@ -36,29 +54,36 @@ export async function POST(req: Request) {
       validAmounts.push(...calculateWithFees(basePrice)); // With fees
     });
     
+    const amountRaw = Number(data?.amount_raw || data?.amount || 0);
     console.log(`Valid amounts: ${validAmounts.join(', ')}`);
-    console.log(`Received amount: ${data.amount_raw}`);
+    console.log(`Received amount: ${amountRaw}`);
     
-    if (!validAmounts.includes(data.amount_raw)) {
-      console.log(`Nominal ${data.amount_raw} tidak valid untuk PRO`);
+    if (!validAmounts.includes(amountRaw)) {
+      console.log(`Nominal ${amountRaw} tidak valid untuk PRO`);
       return NextResponse.json({ message: "Nominal tidak valid untuk upgrade PRO, terima kasih donasinya!" });
     }
 
-    console.log(`✅ Nominal ${data.amount_raw} valid untuk PRO upgrade`);
+    console.log(`✅ Nominal ${amountRaw} valid untuk PRO upgrade`);
 
     // 3. Ambil Email User
     // Strategi: Cek donator_email dulu. Kalau login saweria beda sama login app,
     // kita minta user tulis email di kolom pesan.
     
-    let targetEmail = data.donator_email;
+    let targetEmail = String(data?.donator_email || "").trim().toLowerCase();
     
     // Cek apakah di pesan ada email? (Regex sederhana cari email)
-    const emailInMessage = data.message.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
+    const message = String(data?.message || "");
+    const emailInMessage = message.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
     if (emailInMessage) {
-      targetEmail = emailInMessage[0];
+      targetEmail = emailInMessage[0].trim().toLowerCase();
     }
 
-    console.log(`Menerima donasi dari: ${targetEmail}, Nominal: ${data.amount_raw}`);
+    if (!targetEmail) {
+      console.log("Email user tidak ditemukan di payload Saweria.");
+      return NextResponse.json({ message: "Email tidak ditemukan di payload." }, { status: 400 });
+    }
+
+    console.log(`Menerima donasi dari: ${targetEmail}, Nominal: ${amountRaw}`);
 
     // 4. Update Database User
     const user = await prisma.user.findUnique({ where: { email: targetEmail } });
@@ -68,9 +93,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "User not found" });
     }
 
-    // Aktifkan PRO 30 Hari
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 30);
+    // Tentukan paket berdasarkan nominal base (tanpa fee)
+    // 180k/45k => yearly, 20k/5k => monthly
+    const yearlyBases = [180000, 45000];
+    const monthlyBases = [20000, 5000];
+    const allYearlyAmounts = yearlyBases.flatMap((b) => [b, ...calculateWithFees(b)]);
+    const isYearly = allYearlyAmounts.includes(amountRaw);
+
+    // Jika user masih aktif PRO, extend dari tanggal expired sekarang.
+    const baseDate = user.proExpiresAt && new Date(user.proExpiresAt) > new Date()
+      ? new Date(user.proExpiresAt)
+      : new Date();
+    const expiryDate = new Date(baseDate);
+    if (isYearly) {
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+    } else {
+      expiryDate.setMonth(expiryDate.getMonth() + 1);
+    }
 
     await prisma.user.update({
       where: { email: targetEmail },
@@ -81,17 +120,25 @@ export async function POST(req: Request) {
     });
 
     // Opsional: Simpan riwayat transaksi di tabel Transaction (buat laporan)
-    await prisma.transaction.create({
-      data: {
+    const orderId = String(data?.id || data?.transaction_id || `saweria-${Date.now()}`);
+    await prisma.transaction.upsert({
+      where: { orderId },
+      create: {
         userId: user.id,
-        orderId: data.id, // ID dari Saweria
-        amount: data.amount_raw,
-        status: "success",
+        orderId, // ID dari Saweria
+        amount: amountRaw,
+        status: "settlement",
         snapToken: "saweria-direct",
       },
+      update: {
+        userId: user.id,
+        amount: amountRaw,
+        status: "settlement",
+        snapToken: "saweria-direct",
+      }
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, plan: isYearly ? "yearly" : "monthly", proExpiresAt: expiryDate });
 
   } catch (error) {
     console.error("Saweria Webhook Error:", error);

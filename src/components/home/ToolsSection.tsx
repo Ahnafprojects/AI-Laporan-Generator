@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import {
     AlignLeft, QrCode, Lock, Braces, Receipt, Type, Timer,
     ArrowRightLeft, GitCompare, FileType, Search, Image as ImageIcon,
@@ -216,7 +217,9 @@ const TOOLS = [
     }
 ];
 
-export default function ToolsSection({ isLoggedIn }: { isLoggedIn: boolean }) {
+export default function ToolsSection() {
+    const { status } = useSession();
+    const isLoggedIn = status === "authenticated";
     const [searchTerm, setSearchTerm] = useState("");
 
     const filteredTools = TOOLS.filter(tool =>

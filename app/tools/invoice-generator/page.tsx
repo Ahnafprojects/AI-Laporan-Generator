@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Download, Printer, Receipt } from "lucide-react";
 import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 
 interface InvoiceItem {
     id: string;
@@ -61,6 +60,7 @@ export default function InvoiceGeneratorPage() {
         if (!invoiceRef.current) return;
         setLoading(true);
         try {
+            const jsPDF = (await import("jspdf")).default;
             const canvas = await html2canvas(invoiceRef.current, { scale: 2 });
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF('p', 'mm', 'a4');

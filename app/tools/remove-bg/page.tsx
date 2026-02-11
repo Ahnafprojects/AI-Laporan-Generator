@@ -2,18 +2,13 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { removeBackground } from "@imgly/background-removal";
 import { ImagePlus, Download, Loader2, Eraser, Layers } from "lucide-react";
-import { useToolUsage } from "@/hooks/useToolUsage";
-import { useToast } from "@/hooks/use-toast";
 
 export default function RemoveBgPage() {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [bgColor, setBgColor] = useState<string>("transparent"); // transparent, red, blue, white
-  const { isLimited, incrementUsage, remaining } = useToolUsage("remove-bg");
-  const { toast } = useToast();
 
   // --- HANDLER UPLOAD ---
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,15 +16,8 @@ export default function RemoveBgPage() {
     if (file) {
       const url = URL.createObjectURL(file);
       setImageSrc(url);
-      setImageSrc(url);
       setProcessedImage(null); // Reset hasil sebelumnya
-
-      // Check limit before processing
-      if (incrementUsage()) {
-        processImage(url);
-      } else {
-        // Toast handled by hook
-      }
+      processImage(url);
     }
   };
 
@@ -37,6 +25,7 @@ export default function RemoveBgPage() {
   const processImage = async (imageUrl: string) => {
     setLoading(true);
     try {
+      const { removeBackground } = await import("@imgly/background-removal");
       // Config: publicPath mengarah ke folder public/static/js/ atau CDN default
       // Kita pakai default CDN biar gampang setupnya
       const blob = await removeBackground(imageUrl, {
@@ -220,12 +209,6 @@ export default function RemoveBgPage() {
 
       </div>
       {/* Limit Indicator */}
-      <div className="fixed top-24 right-4 z-50">
-        <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
-          <span>Daily Limit:</span>
-          <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
-        </div>
-      </div>
     </div>
   );
 }

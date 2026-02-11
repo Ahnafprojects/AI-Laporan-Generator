@@ -3,15 +3,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileText, Upload, ArrowUp, ArrowDown, Trash2, Merge, Download } from "lucide-react";
-import { PDFDocument } from "pdf-lib";
-import { useToolUsage } from "@/hooks/useToolUsage";
-import { useToast } from "@/hooks/use-toast";
 
 export default function PdfMergerPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
-  const { isLimited, incrementUsage, remaining } = useToolUsage("pdf-merger");
-  const { toast } = useToast();
 
   // --- HANDLER UPLOAD ---
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,12 +42,10 @@ export default function PdfMergerPage() {
       alert("Minimal pilih 2 file PDF untuk digabungkan.");
       return;
     }
-
-    if (!incrementUsage()) return; // Check limit
-
     setLoading(true);
 
     try {
+      const { PDFDocument } = await import("pdf-lib");
       // 1. Buat Dokumen Kosong
       const mergedPdf = await PDFDocument.create();
 
@@ -196,12 +189,6 @@ export default function PdfMergerPage() {
       )}
 
       {/* Limit Indicator */}
-      <div className="fixed top-24 right-4 z-50">
-        <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
-          <span>Daily Limit:</span>
-          <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
-        </div>
-      </div>
     </div>
   );
 }

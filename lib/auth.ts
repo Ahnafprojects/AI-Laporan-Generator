@@ -19,7 +19,15 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findUnique({
           where: {
             email: credentials.email
-          }
+          },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            password: true,
+            emailVerified: true,
+            proExpiresAt: true,
+          },
         });
 
         if (!user) {
@@ -40,10 +48,13 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Email belum diverifikasi. Silakan cek email Anda dan klik link verifikasi.");
         }
 
+        const isProActive = !!(user.proExpiresAt && new Date(user.proExpiresAt) > new Date());
+
         return {
           id: user.id,
           email: user.email,
           name: user.name,
+          isProActive,
         };
       }
     })
@@ -58,12 +69,14 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.isProActive = (user as any).isProActive ?? false;
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
         (session.user as any).id = token.id;
+        (session.user as any).isProActive = token.isProActive ?? false;
       }
       return session;
     },

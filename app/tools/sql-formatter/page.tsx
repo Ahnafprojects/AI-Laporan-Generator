@@ -7,21 +7,16 @@ import { Database, Code, PlayCircle, Copy, Check, ArrowRight } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useToolUsage } from "@/hooks/useToolUsage";
 
 export default function SqlFormatter() {
     const { toast } = useToast();
     const [input, setInput] = useState("SELECT * FROM users WHERE id = 1 AND active = true ORDER BY created_at DESC");
     const [output, setOutput] = useState("");
     const [copied, setCopied] = useState(false);
-    const { isLimited, incrementUsage, remaining } = useToolUsage("sql-formatter");
 
-    // Basic SQL Formatter (Regex-based)
-    // Note: This is a simple client-side formatter for common SQL
+    // Basic SQL formatter (regex-based) for common SQL patterns.
     const formatSql = () => {
         if (!input) return;
-        if (!incrementUsage()) return; // Limit usage on format
-
         let sql = input
             .replace(/\s+/g, ' ') // Collapse whitespace
             .replace(/\(\s+/g, '(')
@@ -84,14 +79,6 @@ export default function SqlFormatter() {
             {/* Background Blobs */}
             <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
                 <div className="absolute top-0 left-1/2 w-96 h-96 bg-orange-400/20 rounded-full blur-3xl animate-blob"></div>
-            </div>
-
-            {/* Limit Indicator */}
-            <div className="fixed top-24 right-4 z-50">
-                <div className="bg-white/80 backdrop-blur border border-white/20 shadow-sm px-3 py-1.5 rounded-full text-xs font-medium text-gray-500 flex items-center gap-2">
-                    <span>Daily Limit:</span>
-                    <span className={`${remaining === 0 ? 'text-red-500 font-bold' : 'text-violet-600'}`}>{remaining} left</span>
-                </div>
             </div>
 
             <Navbar />

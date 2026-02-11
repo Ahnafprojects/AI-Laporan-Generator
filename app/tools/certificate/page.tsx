@@ -6,9 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BadgeCheck, Upload, Download, Type, Move, Loader2 } from "lucide-react";
-import jsPDF from "jspdf";
-import JSZip from "jszip";
-import { saveAs } from "file-saver";
 
 export default function CertificateGeneratorPage() {
   const [template, setTemplate] = useState<string | null>(null);
@@ -54,9 +51,15 @@ export default function CertificateGeneratorPage() {
 
     setLoading(true);
     setProgress(0);
-    const zip = new JSZip();
 
     try {
+      const [{ default: jsPDF }, { default: JSZip }, { saveAs }] = await Promise.all([
+        import("jspdf"),
+        import("jszip"),
+        import("file-saver"),
+      ]);
+      const zip = new JSZip();
+
       // 1. Dapatkan Dimensi Gambar Asli
       // Kita pakai trick load image ke HTML Image Object buat tau width/height
       const img = new Image();

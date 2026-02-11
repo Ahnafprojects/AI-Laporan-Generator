@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Groq from "groq-sdk";
 import { SYSTEM_PROMPT } from "@/lib/ai/prompts";
+import { checkDailyUsage, incrementDailyUsage } from "@/lib/rate-limit";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -22,44 +23,13 @@ export async function POST(req: Request) {
 
     if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    // 1. Cek Status PRO User - based on expiry date, not isPro flag
-    const isProActive = user.proExpiresAt && new Date(user.proExpiresAt) > new Date();
-
-    // 2. Tentukan Limit berdasarkan status PRO
-    const DAILY_LIMIT = isProActive ? 50 : 3; // Pro 50, Free 3
-
-    // 3. Hitung usage hari ini dari DailyUsage table
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Cek atau buat record usage hari ini
-    let dailyUsage = await prisma.dailyUsage.findUnique({
-      where: {
-        userId_date: {
-          userId: user.id,
-          date: today,
-        },
-      },
-    });
-
-    // Jika belum ada record hari ini, buat baru
-    if (!dailyUsage) {
-      dailyUsage = await prisma.dailyUsage.create({
-        data: {
-          userId: user.id,
-          date: today,
-          usageCount: 0,
-        },
-      });
-    }
-
-    // 4. Tolak jika over limit
-    if (dailyUsage.usageCount >= DAILY_LIMIT) {
-      return NextResponse.json({ 
-        error: isProActive 
-          ? "Limit Pro harian habis (50 laporan)." 
-          : "Limit Gratis habis! Upgrade ke PRO untuk 50 laporan/hari." 
-      }, { status: 429 });
+    // Check AI quota in a single shared helper to keep limits consistent across AI endpoints.
+    const rateLimitCheck = await checkDailyUsage();
+    if (!rateLimitCheck.allowed) {
+      return NextResponse.json(
+        { error: rateLimitCheck.error },
+        { status: rateLimitCheck.status || 429 }
+      );
     }
 
     const body = await req.json();
@@ -118,20 +88,8 @@ export async function POST(req: Request) {
       },
     });
 
-    // INCREMENT DAILY USAGE COUNT (Tidak berkurang meski laporan dihapus)
-    await prisma.dailyUsage.update({
-      where: {
-        userId_date: {
-          userId: user.id,
-          date: today,
-        },
-      },
-      data: {
-        usageCount: {
-          increment: 1,
-        },
-      },
-    });
+    // Increment usage only for successful AI generations.
+    await incrementDailyUsage(user.id);
 
     return NextResponse.json({ success: true, reportId: report.id });
 

@@ -19,6 +19,17 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
 
+  const getSafeRedirectPath = (rawUrl: string | null) => {
+    if (!rawUrl) return "/create";
+    try {
+      const parsed = new URL(rawUrl, window.location.origin);
+      if (parsed.origin !== window.location.origin) return "/create";
+      return `${parsed.pathname}${parsed.search}${parsed.hash}` || "/create";
+    } catch {
+      return rawUrl.startsWith("/") ? rawUrl : "/create";
+    }
+  };
+
   useEffect(() => {
     // Cek URL parameters untuk pesan verifikasi
     const verified = searchParams.get('verified');
@@ -40,6 +51,14 @@ function LoginForm() {
     }
   }, [searchParams, toast]);
 
+  useEffect(() => {
+    const callbackUrl = searchParams.get("callbackUrl");
+    const target = getSafeRedirectPath(callbackUrl);
+    router.prefetch(target || "/create");
+    router.prefetch("/create");
+    router.prefetch("/profile?tab=profile");
+  }, [router, searchParams]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -49,6 +68,7 @@ function LoginForm() {
         email,
         password,
         redirect: false,
+        callbackUrl: searchParams.get("callbackUrl") ?? "/create",
       });
 
       if (result?.error) {
@@ -72,17 +92,9 @@ function LoginForm() {
           description: "Selamat datang kembali.",
         });
 
-        // Smart Redirect: Use callbackUrl if present, otherwise default to /create
-        const callbackUrl = searchParams.get("callbackUrl");
-        if (callbackUrl) {
-          // Force HTTPS to avoid redirect loops if the env var generated an http link
-          const secureUrl = callbackUrl.replace("http://", "https://");
-          router.push(secureUrl);
-        } else {
-          router.push("/create");
-        }
+        router.replace(getSafeRedirectPath(result?.url ?? searchParams.get("callbackUrl")));
       }
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Error",
